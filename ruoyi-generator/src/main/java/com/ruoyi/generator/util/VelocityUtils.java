@@ -123,17 +123,11 @@ public class VelocityUtils
 
     /**
      * 获取模板信息
-     * @param tplCategory 生成的模板
-     * @param tplWebType 前端类型
+     *
      * @return 模板列表
      */
-    public static List<String> getTemplateList(String tplCategory, String tplWebType)
+    public static List<String> getTemplateList(String tplCategory)
     {
-        String useWebType = "vm/vue";
-        if ("element-plus".equals(tplWebType))
-        {
-            useWebType = "vm/vue/v3";
-        }
         List<String> templates = new ArrayList<String>();
         templates.add("vm/java/domain.java.vm");
         templates.add("vm/java/mapper.java.vm");
@@ -145,15 +139,15 @@ public class VelocityUtils
         templates.add("vm/js/api.js.vm");
         if (GenConstants.TPL_CRUD.equals(tplCategory))
         {
-            templates.add(useWebType + "/index.vue.vm");
+            templates.add("vm/vue/index.vue.vm");
         }
         else if (GenConstants.TPL_TREE.equals(tplCategory))
         {
-            templates.add(useWebType + "/index-tree.vue.vm");
+            templates.add("vm/vue/index-tree.vue.vm");
         }
         else if (GenConstants.TPL_SUB.equals(tplCategory))
         {
-            templates.add(useWebType + "/index.vue.vm");
+            templates.add("vm/vue/index.vue.vm");
             templates.add("vm/java/sub-domain.java.vm");
         }
         return templates;

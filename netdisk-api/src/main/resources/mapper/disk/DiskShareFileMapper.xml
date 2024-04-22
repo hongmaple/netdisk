@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.DiskShareFileMapper">
+
+    <resultMap type="DiskShareFile" id="DiskShareFileResult">
+        <result property="id"    column="id"    />
+        <result property="fileIds"    column="file_ids"    />
+        <result property="uuid"    column="uuid"    />
+        <result property="secretKey"    column="secret_key"    />
+        <result property="isPermanent"    column="is_permanent"    />
+        <result property="type"    column="type"    />
+        <result property="expirationTime"    column="expiration_time"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="allFileIds"    column="all_file_ids"    />
+    </resultMap>
+
+    <sql id="selectDiskShareFileVo">
+        select id, file_ids, uuid, secret_key,all_file_ids, expiration_time,is_permanent,type, create_id, create_time, update_id, update_time, remark, del_flag from disk_share_file
+    </sql>
+
+    <select id="selectDiskShareFileList" parameterType="DiskShareFile" resultMap="DiskShareFileResult">
+        <include refid="selectDiskShareFileVo"/>
+        <where>
+            <if test="fileIds != null  and fileIds != ''"> and file_ids = #{fileIds}</if>
+            <if test="uuid != null  and uuid != ''"> and uuid = #{uuid}</if>
+            <if test="secretKey != null  and secretKey != ''"> and secret_key = #{secretKey}</if>
+            <if test="params.beginExpirationTime != null and params.beginExpirationTime != '' and params.endExpirationTime != null and params.endExpirationTime != ''"> and expiration_time between #{params.beginExpirationTime} and #{params.endExpirationTime}</if>
+            <if test="createId != null "> and create_id = #{createId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateId != null "> and update_id = #{updateId}</if>
+            <if test="isPermanent != null "> and is_permanent = #{isPermanent}</if>
+            <if test="type != null "> and type = #{type}</if>
+        </where>
+    </select>
+
+    <select id="selectDiskShareFileById" parameterType="Long" resultMap="DiskShareFileResult">
+        <include refid="selectDiskShareFileVo"/>
+        where id = #{id}
+    </select>
+    <select id="get" resultMap="DiskShareFileResult">
+        select * from disk_share_file where uuid = #{uuid}
+    </select>
+
+    <insert id="insertDiskShareFile" parameterType="DiskShareFile">
+        insert into disk_share_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="fileIds != null">file_ids,</if>
+            <if test="uuid != null">uuid,</if>
+            <if test="secretKey != null">secret_key,</if>
+            <if test="expirationTime != null">expiration_time,</if>
+            <if test="isPermanent != null">is_permanent,</if>
+            <if test="type != null">type,</if>
+            <if test="createId != null">create_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateId != null">update_id,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="allFileIds != null">all_file_ids,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="fileIds != null">#{fileIds},</if>
+            <if test="uuid != null">#{uuid},</if>
+            <if test="secretKey != null">#{secretKey},</if>
+            <if test="expirationTime != null">#{expirationTime},</if>
+            <if test="isPermanent != null">#{isPermanent},</if>
+            <if test="type != null">#{type},</if>
+            <if test="createId != null">#{createId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateId != null">#{updateId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="allFileIds != null">#{allFileIds},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDiskShareFile" parameterType="DiskShareFile">
+        update disk_share_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileIds != null">file_ids = #{fileIds},</if>
+            <if test="uuid != null">uuid = #{uuid},</if>
+            <if test="secretKey != null">secret_key = #{secretKey},</if>
+            <if test="expirationTime != null">expiration_time = #{expirationTime},</if>
+            <if test="createId != null">create_id = #{createId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateId != null">update_id = #{updateId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="isPermanent != null">is_permanent = #{isPermanent},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="allFileIds != null">all_file_ids = #{allFileIds}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDiskShareFileById" parameterType="Long">
+        delete from disk_share_file where id = #{id}
+    </delete>
+
+    <delete id="deleteDiskShareFileByIds" parameterType="String">
+        delete from disk_share_file where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

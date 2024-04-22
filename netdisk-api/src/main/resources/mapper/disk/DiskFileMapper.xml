@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.DiskFileMapper">
+    
+    <resultMap type="DiskFile" id="DiskFileResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="oldName"    column="old_name"    />
+        <result property="size"    column="size"    />
+        <result property="url"    column="url"    />
+        <result property="type"    column="type"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="isDir"    column="is_dir"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectDiskFileVo">
+        select id, name, old_name, size, url, type, parent_id, is_dir, order_num, create_id, create_time, update_id, update_time, remark, del_flag from disk_file
+    </sql>
+
+    <select id="selectDiskFileList" parameterType="DiskFile" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="oldName != null  and oldName != ''"> and old_name like concat('%', #{oldName}, '%')</if>
+            <if test="size != null "> and size &gt;= #{size}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="isDir != null "> and is_dir = #{isDir}</if>
+            <if test="parentId != null "> and parent_id = #{parentId}</if>
+            <if test="createId != null "> and create_id = #{createId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''"> and create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateId != null "> and update_id = #{updateId}</if>
+             and del_flag = 0
+        </where>
+    </select>
+    
+    <select id="selectDiskFileById" parameterType="Long" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        where id = #{id} and del_flag = 0
+    </select>
+    <select id="selectDiskFileByParentIds" resultType="java.lang.Long">
+        select id from disk_file  where del_flag = 0 and parent_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="verify" resultType="java.lang.Integer">
+        select count(1) from disk_file where del_flag = 0 and name=#{name} and parent_id = #{parentId} and create_id=#{userId}
+        <if test="id != null">
+            and id != #{id}
+        </if>
+    </select>
+    <select id="selectDiskFileListByIds" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        where del_flag = 0 and id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectDiskFileListByIdsAndUserId" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        where del_flag = 0 and create_id=#{userId} and id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectAll" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+    </select>
+    <select id="selectDiskFileListByIdsIgnoreDel" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectAllByUserId" resultMap="DiskFileResult">
+        <include refid="selectDiskFileVo"/>
+        where create_id = #{userId}
+    </select>
+    <select id="typeCapacityStats" resultType="java.util.Map">
+        select type,sum(size) size from disk_file where create_id = #{userId} and type!=5
+        GROUP BY type
+    </select>
+    <select id="fileTypeNumStats" resultType="java.util.Map">
+        select type,count(1) num from disk_file where create_id = #{userId}
+        GROUP BY type
+    </select>
+
+    <insert id="insertDiskFile" parameterType="DiskFile" useGeneratedKeys="true" keyProperty="id">
+        insert into disk_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="oldName != null">old_name,</if>
+            <if test="size != null">size,</if>
+            <if test="url != null">url,</if>
+            <if test="type != null">type,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="isDir != null">is_dir,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="createId != null">create_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateId != null">update_id,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="oldName != null">#{oldName},</if>
+            <if test="size != null">#{size},</if>
+            <if test="url != null">#{url},</if>
+            <if test="type != null">#{type},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="isDir != null">#{isDir},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="createId != null">#{createId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateId != null">#{updateId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDiskFile" parameterType="DiskFile">
+        update disk_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="oldName != null">old_name = #{oldName},</if>
+            <if test="size != null">size = #{size},</if>
+            <if test="url != null">url = #{url},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="isDir != null">is_dir = #{isDir},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="createId != null">create_id = #{createId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateId != null">update_id = #{updateId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="removeDiskFileByIds">
+        update disk_file set del_flag = 2
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <update id="refresh">
+        update disk_file set del_flag = 0
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteDiskFileById" parameterType="Long">
+        delete from disk_file where id = #{id}
+    </delete>
+
+    <delete id="deleteDiskFileByIds" parameterType="String">
+        delete from disk_file where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

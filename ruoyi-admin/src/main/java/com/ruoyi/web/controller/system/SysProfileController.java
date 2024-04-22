@@ -48,7 +48,6 @@ public class SysProfileController extends BaseController
         SysUser user = loginUser.getUser();
         AjaxResult ajax = AjaxResult.success(user);
         ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
-        ajax.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
         return ajax;
     }
 
@@ -60,22 +59,26 @@ public class SysProfileController extends BaseController
     public AjaxResult updateProfile(@RequestBody SysUser user)
     {
         LoginUser loginUser = getLoginUser();
-        SysUser currentUser = loginUser.getUser();
-        currentUser.setNickName(user.getNickName());
-        currentUser.setEmail(user.getEmail());
-        currentUser.setPhonenumber(user.getPhonenumber());
-        currentUser.setSex(user.getSex());
-        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(currentUser))
+        SysUser sysUser = loginUser.getUser();
+        user.setUserName(sysUser.getUserName());
+        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user))
         {
-            return error("修改用户'" + loginUser.getUsername() + "'失败，手机号码已存在");
+            return error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
-        if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(currentUser))
+        if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user))
         {
-            return error("修改用户'" + loginUser.getUsername() + "'失败，邮箱账号已存在");
+            return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        if (userService.updateUserProfile(currentUser) > 0)
+        user.setUserId(sysUser.getUserId());
+        user.setPassword(null);
+        user.setAvatar(null);
+        if (userService.updateUserProfile(user) > 0)
         {
             // 更新缓存用户信息
+            sysUser.setNickName(user.getNickName());
+            sysUser.setPhonenumber(user.getPhonenumber());
+            sysUser.setEmail(user.getEmail());
+            sysUser.setSex(user.getSex());
             tokenService.setLoginUser(loginUser);
             return success();
         }
@@ -100,11 +103,10 @@ public class SysProfileController extends BaseController
         {
             return error("新密码不能与旧密码相同");
         }
-        newPassword = SecurityUtils.encryptPassword(newPassword);
-        if (userService.resetUserPwd(userName, newPassword) > 0)
+        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0)
         {
             // 更新缓存用户密码
-            loginUser.getUser().setPassword(newPassword);
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
             tokenService.setLoginUser(loginUser);
             return success();
         }
@@ -121,7 +123,7 @@ public class SysProfileController extends BaseController
         if (!file.isEmpty())
         {
             LoginUser loginUser = getLoginUser();
-            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(),true, file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
             {
                 AjaxResult ajax = AjaxResult.success();

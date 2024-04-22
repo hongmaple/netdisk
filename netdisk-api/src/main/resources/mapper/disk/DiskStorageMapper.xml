@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.DiskStorageMapper">
+    
+    <resultMap type="DiskStorage" id="DiskStorageResult">
+        <result property="id"    column="id"    />
+        <result property="baseDir"    column="base_dir"    />
+        <result property="totalCapacity"    column="total_capacity"    />
+        <result property="usedCapacity"    column="used_capacity"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectDiskStorageVo">
+        select id, base_dir, total_capacity, used_capacity, create_id, create_time, update_id, update_time, remark, del_flag from disk_storage
+    </sql>
+
+    <select id="selectDiskStorageList" parameterType="DiskStorage" resultMap="DiskStorageResult">
+        <include refid="selectDiskStorageVo"/>
+        <where>  
+            <if test="totalCapacity != null "> and total_capacity &gt;= #{totalCapacity}</if>
+            <if test="usedCapacity != null "> and used_capacity &gt;= #{usedCapacity}</if>
+            <if test="createId != null "> and create_id = #{createId}</if>
+            <if test="updateId != null "> and update_id = #{updateId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDiskStorageById" parameterType="Long" resultMap="DiskStorageResult">
+        <include refid="selectDiskStorageVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectDiskStorageByUserId" resultMap="DiskStorageResult">
+        <include refid="selectDiskStorageVo"/>
+        where create_id = #{createId}
+    </select>
+
+    <insert id="insertDiskStorage" parameterType="DiskStorage" useGeneratedKeys="true" keyProperty="id">
+        insert into disk_storage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="baseDir != null">base_dir,</if>
+            <if test="totalCapacity != null">total_capacity,</if>
+            <if test="usedCapacity != null">used_capacity,</if>
+            <if test="createId != null">create_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateId != null">update_id,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="baseDir != null">#{baseDir},</if>
+            <if test="totalCapacity != null">#{totalCapacity},</if>
+            <if test="usedCapacity != null">#{usedCapacity},</if>
+            <if test="createId != null">#{createId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateId != null">#{updateId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDiskStorage" parameterType="DiskStorage">
+        update disk_storage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="baseDir != null">base_dir = #{baseDir},</if>
+            <if test="totalCapacity != null">total_capacity = #{totalCapacity},</if>
+            <if test="usedCapacity != null">used_capacity = #{usedCapacity},</if>
+            <if test="createId != null">create_id = #{createId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateId != null">update_id = #{updateId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateUsedCapacity">
+        update disk_storage set used_capacity = #{usedCapacity} where id = #{id}
+    </update>
+
+    <delete id="deleteDiskStorageById" parameterType="Long">
+        delete from disk_storage where id = #{id}
+    </delete>
+
+    <delete id="deleteDiskStorageByIds" parameterType="String">
+        delete from disk_storage where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

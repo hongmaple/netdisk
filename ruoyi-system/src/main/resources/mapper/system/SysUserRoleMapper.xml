@@ -16,8 +16,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="countUserRoleByRoleId" resultType="Integer">
 	    select count(1) from sys_user_role where role_id=#{roleId}  
 	</select>
-	
-	<delete id="deleteUserRole" parameterType="Long">
+
+    <delete id="deleteUserRole" parameterType="Long">
  		delete from sys_user_role where user_id in
  		<foreach collection="array" item="userId" open="(" separator="," close=")">
  			#{userId}

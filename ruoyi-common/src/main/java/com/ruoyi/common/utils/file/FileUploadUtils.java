@@ -23,9 +23,9 @@ import com.ruoyi.common.utils.uuid.Seq;
 public class FileUploadUtils
 {
     /**
-     * 默认大小 50M
+     * 默认大小 100M
      */
-    public static final long DEFAULT_MAX_SIZE = 50 * 1024 * 1024;
+    public static final long DEFAULT_MAX_SIZE = 99999 * 1024 * 1024;
 
     /**
      * 默认的文件名最大长度 100
@@ -58,7 +58,7 @@ public class FileUploadUtils
     {
         try
         {
-            return upload(getDefaultBaseDir(), file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(getDefaultBaseDir(),true, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         }
         catch (Exception e)
         {
@@ -74,11 +74,11 @@ public class FileUploadUtils
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir, MultipartFile file) throws IOException
+    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file) throws IOException
     {
         try
         {
-            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(baseDir,isDatePath, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         }
         catch (Exception e)
         {
@@ -98,7 +98,7 @@ public class FileUploadUtils
      * @throws IOException 比如读写文件出错时
      * @throws InvalidExtensionException 文件校验异常
      */
-    public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
+    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file, String[] allowedExtension)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
@@ -110,7 +110,7 @@ public class FileUploadUtils
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = extractFilename(file);
+        String fileName = extractFilename(file,isDatePath);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
         file.transferTo(Paths.get(absPath));
@@ -120,9 +120,13 @@ public class FileUploadUtils
     /**
      * 编码文件名
      */
-    public static final String extractFilename(MultipartFile file)
+    public static final String extractFilename(MultipartFile file,boolean isDatePath)
     {
-        return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
+        if (isDatePath) {
+            return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
+                    FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
+        }
+        return StringUtils.format("{}_{}.{}",
                 FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.uploadSeqType), getExtension(file));
     }
 
@@ -187,11 +191,15 @@ public class FileUploadUtils
             {
                 throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
                         fileName);
-            }
-            else
+            } else if (allowedExtension == MimeTypeUtils.DOC_EXTENSION)
             {
-                throw new InvalidExtensionException(allowedExtension, extension, fileName);
+                throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
+                        fileName);
             }
+//            else
+//            {
+//                throw new InvalidExtensionException(allowedExtension, extension, fileName);
+//            }
         }
     }
 

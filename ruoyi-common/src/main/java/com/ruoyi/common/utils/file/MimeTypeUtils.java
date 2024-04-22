@@ -26,6 +26,8 @@ public class MimeTypeUtils
 
     public static final String[] VIDEO_EXTENSION = { "mp4", "avi", "rmvb" };
 
+    public static final String[] DOC_EXTENSION = { "doc", "docx", "xls", "ppt", "txt", "pdf"};
+
     public static final String[] DEFAULT_ALLOWED_EXTENSION = {
             // 图片
             "bmp", "gif", "jpg", "jpeg", "png",

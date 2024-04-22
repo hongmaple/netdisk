@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.DiskRecoveryFileMapper">
+    
+    <resultMap type="DiskRecoveryFile" id="DiskRecoveryFileResult">
+        <result property="id"    column="id"    />
+        <result property="fileId"    column="file_id"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <collection  property="diskFileList"   javaType="java.util.List" resultMap="DiskFileResult" />
+    </resultMap>
+
+    <resultMap type="DiskFile" id="DiskFileResult">
+        <result property="id"    column="fileId"    />
+        <result property="name"    column="fileName"    />
+        <result property="oldName"    column="fileOldName"    />
+        <result property="size"    column="fileSize"    />
+        <result property="url"    column="fileUrl"    />
+        <result property="type"    column="fileType"    />
+        <result property="parentId"    column="fileParentId"    />
+        <result property="isDir"    column="fileIsDir"    />
+        <result property="orderNum"    column="fileOrderNum"    />
+        <result property="createId"    column="fileCreateId"    />
+        <result property="createTime"    column="fileCreateTime"    />
+        <result property="updateId"    column="fileUpdateId"    />
+        <result property="updateTime"    column="fileUpdateTime"    />
+        <result property="remark"    column="fileRemark"    />
+        <result property="delFlag"    column="fileDelFlag"    />
+    </resultMap>
+
+    <sql id="selectDiskRecoveryFileVo">
+        select r.id, r.file_id, r.create_id, r.create_time, r.update_id, r.update_time, r.remark
+        ,f.id fileId, f.name fileName, f.old_name fileOldName, f.size fileSize, f.url fileUrl
+        , f.type fileType, f.parent_id fileParentId, f.is_dir fileIsDir, f.order_num fileOrderNum
+        , f.create_id fileCreateId, f.create_time fileCreateTime, f.update_id fileUpdateId
+        , f.update_time fileUpdateTime, f.remark fileRemark, f.del_flag fileDelFlag
+        from disk_recovery_file r
+        inner join disk_file f on r.file_id = f.id
+    </sql>
+
+    <select id="selectDiskRecoveryFileList" parameterType="DiskRecoveryFile" resultMap="DiskRecoveryFileResult">
+        <include refid="selectDiskRecoveryFileVo"/>
+        <where>  
+            <if test="createId != null "> and r.create_id = #{createId}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime != '' and params.endCreateTime != null and params.endCreateTime != ''">
+             and r.create_time between #{params.beginCreateTime} and #{params.endCreateTime}</if>
+            <if test="updateId != null "> and r.update_id = #{updateId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDiskRecoveryFileById" parameterType="Long" resultMap="DiskRecoveryFileResult">
+        <include refid="selectDiskRecoveryFileVo"/>
+        where r.id = #{id}
+    </select>
+    <select id="selectDiskRecoveryFileByIdsAndUserId" resultMap="DiskRecoveryFileResult">
+        <include refid="selectDiskRecoveryFileVo"/>
+        where r.create_id = #{userId} and r.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectCountByIdsAndUserId" resultType="java.lang.Integer">
+        select count(1) from disk_recovery_file where create_id = #{userId} and  id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertDiskRecoveryFile" parameterType="DiskRecoveryFile">
+        insert into disk_recovery_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="fileId != null">file_id,</if>
+            <if test="createId != null">create_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateId != null">update_id,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="fileId != null">#{fileId},</if>
+            <if test="createId != null">#{createId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateId != null">#{updateId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDiskRecoveryFile" parameterType="DiskRecoveryFile">
+        update disk_recovery_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fileId != null">file_id = #{fileId},</if>
+            <if test="createId != null">create_id = #{createId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateId != null">update_id = #{updateId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDiskRecoveryFileById" parameterType="Long">
+        delete from disk_recovery_file where id = #{id}
+    </delete>
+
+    <delete id="deleteDiskRecoveryFileByIds" parameterType="String">
+        delete from disk_recovery_file where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

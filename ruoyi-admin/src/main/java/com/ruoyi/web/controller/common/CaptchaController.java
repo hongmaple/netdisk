@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,7 @@ public class CaptchaController
     
     @Autowired
     private ISysConfigService configService;
+
     /**
      * 生成验证码
      */
@@ -91,4 +93,5 @@ public class CaptchaController
         ajax.put("img", Base64.encode(os.toByteArray()));
         return ajax;
     }
+
 }

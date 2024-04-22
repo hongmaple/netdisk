@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.system;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import com.ruoyi.system.service.ISysConfigService;
  * 
  * @author ruoyi
  */
+@Api("注册验证")
 @RestController
 public class SysRegisterController extends BaseController
 {
@@ -33,6 +36,18 @@ public class SysRegisterController extends BaseController
             return error("当前系统没有开启注册功能！");
         }
         String msg = registerService.register(user);
+        return StringUtils.isEmpty(msg) ? success() : error(msg);
+    }
+
+    @ApiOperation("c端注册")
+    @PostMapping("/customer/register")
+    public AjaxResult customerRegister(@RequestBody RegisterBody user)
+    {
+        if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser"))))
+        {
+            return error("当前系统没有开启注册功能！");
+        }
+        String msg = registerService.customerRegister(user);
         return StringUtils.isEmpty(msg) ? success() : error(msg);
     }
 }

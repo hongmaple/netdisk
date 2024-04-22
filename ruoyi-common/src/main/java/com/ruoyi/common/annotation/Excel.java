@@ -59,12 +59,12 @@ public @interface Excel
     public int roundingMode() default BigDecimal.ROUND_HALF_EVEN;
 
     /**
-     * 导出时在excel中每个列的高度
+     * 导出时在excel中每个列的高度 单位为字符
      */
     public double height() default 14;
 
     /**
-     * 导出时在excel中每个列的宽度
+     * 导出时在excel中每个列的宽 单位为字符
      */
     public double width() default 16;
 
@@ -114,7 +114,7 @@ public @interface Excel
     public ColumnType cellType() default ColumnType.STRING;
 
     /**
-     * 导出列头背景颜色
+     * 导出列头背景色
      */
     public IndexedColors headerBackgroundColor() default IndexedColors.GREY_50_PERCENT;
 
@@ -124,7 +124,7 @@ public @interface Excel
     public IndexedColors headerColor() default IndexedColors.WHITE;
 
     /**
-     * 导出单元格背景颜色
+     * 导出单元格背景色
      */
     public IndexedColors backgroundColor() default IndexedColors.WHITE;
 
@@ -171,7 +171,7 @@ public @interface Excel
 
     public enum ColumnType
     {
-        NUMERIC(0), STRING(1), IMAGE(2), TEXT(3);
+        NUMERIC(0), STRING(1), IMAGE(2);
         private final int value;
 
         ColumnType(int value)

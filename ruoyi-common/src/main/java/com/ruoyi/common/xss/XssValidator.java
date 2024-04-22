@@ -27,13 +27,8 @@ public class XssValidator implements ConstraintValidator<Xss, String>
 
     public static boolean containsHtml(String value)
     {
-        StringBuilder sHtml = new StringBuilder();
         Pattern pattern = Pattern.compile(HTML_PATTERN);
         Matcher matcher = pattern.matcher(value);
-        while (matcher.find())
-        {
-            sHtml.append(matcher.group());
-        }
-        return pattern.matcher(sHtml).matches();
+        return matcher.matches();
     }
 }

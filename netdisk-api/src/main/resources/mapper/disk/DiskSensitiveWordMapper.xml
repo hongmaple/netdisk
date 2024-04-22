@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.DiskSensitiveWordMapper">
+
+    <resultMap type="DiskSensitiveWord" id="DiskSensitiveWordResult">
+        <result property="id"    column="id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="sensitiveWord"    column="sensitive_word"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDiskSensitiveWordVo">
+        select id, user_name, sensitive_word, create_time, update_time from disk_sensitive_word
+    </sql>
+
+    <select id="selectDiskSensitiveWordList" parameterType="DiskSensitiveWord" resultMap="DiskSensitiveWordResult">
+        <include refid="selectDiskSensitiveWordVo"/>
+        <where>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="sensitiveWord != null  and sensitiveWord != ''"> and sensitive_word  like concat('%', #{sensitiveWord}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectDiskSensitiveWordById" parameterType="Long" resultMap="DiskSensitiveWordResult">
+        <include refid="selectDiskSensitiveWordVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectDiskSensitiveWordAllList" resultMap="DiskSensitiveWordResult">
+        <include refid="selectDiskSensitiveWordVo"/>
+    </select>
+
+    <insert id="insertDiskSensitiveWord" parameterType="DiskSensitiveWord" useGeneratedKeys="true" keyProperty="id">
+        insert into disk_sensitive_word
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null and userName != ''">user_name,</if>
+            <if test="sensitiveWord != null and sensitiveWord != ''">sensitive_word,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null and userName != ''">#{userName},</if>
+            <if test="sensitiveWord != null and sensitiveWord != ''">#{sensitiveWord},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDiskSensitiveWord" parameterType="DiskSensitiveWord">
+        update disk_sensitive_word
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="sensitiveWord != null and sensitiveWord != ''">sensitive_word = #{sensitiveWord},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDiskSensitiveWordById" parameterType="Long">
+        delete from disk_sensitive_word where id = #{id}
+    </delete>
+
+    <delete id="deleteDiskSensitiveWordByIds" parameterType="String">
+        delete from disk_sensitive_word where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
