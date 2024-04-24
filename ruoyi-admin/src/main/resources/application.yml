@@ -1,7 +1,7 @@
 # 项目相关配置
 ruoyi:
   # 名称
-  name: MAPLE
+  name: netdisk
   # 版本
   version: 3.8.5
   # 版权年份
