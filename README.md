@@ -90,12 +90,16 @@
         <td><img src="https://oscimg.oschina.net/oscnet/up-5e4daac0bb59612c5038448acbcef235e3a.png"/></td>
     </tr>
    <td>
-    <video controls width="500">
-        <source src="/image/20240414_112639.mp4" type="video/mp4" />
-    </video>
 </td>
 </table>
 
 
 ## 联系我，提供部署定制服务
 wx: mapleCx331   qq群：[![加入QQ群](https://img.shields.io/badge/628043364-blue.svg)](https://qm.qq.com/q/RuCfOyaOUm) 
+
+## 开源不易，谢谢打赏
+
+<img src="/image/wxPay.jpg" alt=""/>
+<img src="/image/zfb.jpg" alt=""/>
+
+    
