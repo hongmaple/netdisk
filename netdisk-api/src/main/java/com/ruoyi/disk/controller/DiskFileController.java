@@ -152,8 +152,9 @@ public class DiskFileController extends BaseController
             diskFile.setUrl(url);
             // 本地资源路径
             String localPath = RuoYiConfig.getProfile();
+            String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
             // 数据库资源地址
-            String filePath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
+            String filePath = localPath + path;
             FileUtil.mkdir(filePath);
             diskFile.setType(5);
         }
@@ -228,6 +229,8 @@ public class DiskFileController extends BaseController
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath,false, file);
+            // 上传到hdfs
+            String descPath = fileName.replace(Constants.RESOURCE_PREFIX, "");
             String url = serverConfig.getUrl() + fileName;
             DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
@@ -309,7 +312,11 @@ public class DiskFileController extends BaseController
 
         try {
             String finalDest = dest;
-            downloadPaths.forEach(path -> FileUtil.copy(path, finalDest,true));
+            try {
+                downloadPaths.forEach(path -> FileUtil.copy(path, finalDest,true));
+            } catch (Exception e) {
+                log.debug("diskfile copy文件报错");
+            }
             // 调用zip方法进行压缩
             ZipUtil.zip(dest, downloadPath);
             byte[] data = FileUtil.readBytes(FileUtil.file(downloadPath));

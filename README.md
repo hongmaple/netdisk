@@ -48,7 +48,7 @@
 
 ## 在线体验
 
-- admin/admin123  
+- admin/admin123
 - 陆陆续续收到一些打赏，为了更好的体验已用于演示服务器升级。谢谢各位小伙伴。
 
 演示地址：http://vue.ruoyi.vip  
@@ -118,14 +118,13 @@
 </table>
 
 ## 联系我，提供部署定制服务
-wx: mapleCx330   qq群：[![加入QQ群](https://img.shields.io/badge/628043364-blue.svg)](https://qm.qq.com/q/RuCfOyaOUm) 
+wx: mapleCx331   qq群：[![加入QQ群](https://img.shields.io/badge/628043364-blue.svg)](https://qm.qq.com/q/RuCfOyaOUm)
 
 ## 开源不易，谢谢打赏
 <table>
  <td>
-   <td><img style="height: 300px;width: 300px" src="https://gitee.com/hongmaple/netdisk/raw/master/image/wxPay.jpg" alt=""/></td>
-   <td><img style="height: 300px;width: 300px" src="https://gitee.com/hongmaple/netdisk/raw/master/image/zfb.jpg" alt=""/></td>
+   <td><img style="height: 150px;width: 100px" src="/image/wxPay.jpg" alt=""/></td>
+   <td><img style="height: 150px;width: 100px" src="/image/zfb.jpg" alt=""/></td>
  </td>
 </table>
-
     
