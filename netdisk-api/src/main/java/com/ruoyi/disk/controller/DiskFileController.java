@@ -17,7 +17,6 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
-import com.ruoyi.disk.HadoopTemplate;
 import com.ruoyi.disk.domain.*;
 import com.ruoyi.disk.domain.bo.DownloadBo;
 import com.ruoyi.disk.service.*;
@@ -76,9 +75,6 @@ public class DiskFileController extends BaseController
     private IDiskSensitiveWordService diskSensitiveWordService;
 
     private static final String FILE_DELIMETER = ",";
-
-    @Autowired
-    private HadoopTemplate hadoopTemplate;
 
     /**
      * 查询文件列表
@@ -160,11 +156,6 @@ public class DiskFileController extends BaseController
             // 数据库资源地址
             String filePath = localPath + path;
             FileUtil.mkdir(filePath);
-            try {
-                hadoopTemplate.existDir(path,true);
-            } catch (IOException e) {
-                log.debug(e.getMessage());
-            }
             diskFile.setType(5);
         }
         return toAjax(diskFileService.insertDiskFile(diskFile));
@@ -240,8 +231,6 @@ public class DiskFileController extends BaseController
             String fileName = FileUploadUtils.upload(filePath,false, file);
             // 上传到hdfs
             String descPath = fileName.replace(Constants.RESOURCE_PREFIX, "");
-            hadoopTemplate.copyFileToHDFS(false,true,RuoYiConfig.getProfile()+ descPath, descPath);
-            hadoopTemplate.getFileList(descPath);
             String url = serverConfig.getUrl() + fileName;
             DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
