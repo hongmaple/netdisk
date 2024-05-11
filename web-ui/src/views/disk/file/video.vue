@@ -447,7 +447,6 @@ export default {
       }
     },
     handleelDownload() {
-      this.loading = true;
       const data = {
         ids: this.ids.join(",")
       }
