@@ -130,3 +130,11 @@ xss:
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*,/disk/*
 
+
+hadoop:
+  user: user001
+  password: 19980629
+
+hdfs:
+  hdfs-site:
+  core-site:
