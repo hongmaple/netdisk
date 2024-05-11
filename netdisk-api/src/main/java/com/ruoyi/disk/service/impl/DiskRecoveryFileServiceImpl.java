@@ -1,20 +1,23 @@
 package com.ruoyi.disk.service.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IORuntimeException;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.disk.controller.DiskFileController;
 import com.ruoyi.disk.domain.DiskFile;
 import com.ruoyi.disk.domain.DiskStorage;
 import com.ruoyi.disk.service.IDiskFileService;
 import com.ruoyi.disk.service.IDiskStorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.disk.mapper.DiskRecoveryFileMapper;
@@ -31,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService 
 {
+    private static final Logger log = LoggerFactory.getLogger(DiskRecoveryFileServiceImpl.class);
+
     @Autowired
     private DiskRecoveryFileMapper diskRecoveryFileMapper;
 
@@ -123,7 +128,11 @@ public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService
             String localPath = RuoYiConfig.getProfile();
             // 数据库资源地址
             String downloadPath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
-            FileUtil.del(downloadPath);
+            try {
+                FileUtil.del(downloadPath);
+            } catch (IORuntimeException e) {
+                log.debug("文件删除失败 文件不存在 {0}",e);
+            }
         });
         diskFileService.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
         return diskRecoveryFileMapper.deleteDiskRecoveryFileByIds(ids);

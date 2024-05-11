@@ -803,7 +803,6 @@ export default {
     },
     handleelDownload(row) {
       const ids = row.id || this.ids;
-      this.loading = true;
       const data = {
         ids: ids.join(",")
       }
