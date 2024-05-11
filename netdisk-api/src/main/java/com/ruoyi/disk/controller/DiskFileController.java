@@ -229,8 +229,6 @@ public class DiskFileController extends BaseController
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath,false, file);
-            // 上传到hdfs
-            String descPath = fileName.replace(Constants.RESOURCE_PREFIX, "");
             String url = serverConfig.getUrl() + fileName;
             DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
