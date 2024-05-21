@@ -228,13 +228,13 @@ public class DiskFileController extends BaseController
                         .replace("/"+diskStorage.getBaseDir(),"");
             }
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
+            DiskFile diskFile = new DiskFile();
             String fileName = RandomUtil.randomString(4)+"_"+file.getOriginalFilename();
+            diskFile.setName(fileName);
             // 上传并返回新文件名称
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             String url = serverConfig.getUrl()  + fileName;
-            DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
-            diskFile.setName(fileName);
             diskFile.setOldName(file.getOriginalFilename());
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
