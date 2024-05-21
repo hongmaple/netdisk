@@ -239,16 +239,16 @@ public class DiskFileController extends BaseController
                         .replace("/"+diskStorage.getBaseDir(),"");
             }
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
+            DiskFile diskFile = new DiskFile();
             String fileName = RandomUtil.randomString(4)+"_"+file.getOriginalFilename();
+            diskFile.setName(fileName);
             // 上传并返回新文件名称
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             // 上传到hdfs
-            String descPath = StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX);
+            String descPath = StringUtils.substringAfter(filePath+File.separator+RandomUtil.randomString(9)+FileUploadUtils.getExtension(file), Constants.RESOURCE_PREFIX);
             hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ descPath, descPath);
             String url = serverConfig.getUrl() + FILE_BASE + descPath.replace("/","--");
-            DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
-            diskFile.setName(fileName);
             diskFile.setOldName(file.getOriginalFilename());
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
