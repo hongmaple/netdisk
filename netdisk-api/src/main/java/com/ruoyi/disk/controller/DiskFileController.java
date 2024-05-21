@@ -77,6 +77,8 @@ public class DiskFileController extends BaseController
 
     private static final String FILE_DELIMETER = ",";
 
+    private static final String FILE_BASE = "/hadoop/";
+
     @Autowired
     private HadoopTemplate hadoopTemplate;
 
@@ -239,10 +241,9 @@ public class DiskFileController extends BaseController
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath,false, file);
             // 上传到hdfs
-            String descPath = fileName.replace(Constants.RESOURCE_PREFIX, "");
-            hadoopTemplate.copyFileToHDFS(false,true,RuoYiConfig.getProfile()+ descPath, descPath);
-            hadoopTemplate.getFileList(descPath);
-            String url = serverConfig.getUrl() + fileName;
+            String descPath = StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX);
+            hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ descPath, descPath);
+            String url = serverConfig.getUrl() + FILE_BASE + descPath.replace("/","--");
             DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
             String[] fileNames = fileName.split("/");
@@ -251,13 +252,13 @@ public class DiskFileController extends BaseController
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
             diskFile.setParentId(parentId);
-            diskFile.setUrl(fileName);
+            diskFile.setUrl(FILE_BASE + descPath.replace("/","--"));
             diskFile.setSize(file.getSize());
             diskFile.setType(diskFileService.getType(FileUploadUtils.getExtension(file)));
             diskFileService.save(diskFile,diskStorage);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
-            ajax.put("fileName", fileName);
+            ajax.put("fileName", FILE_BASE + descPath.replace("/","--"));
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             ajax.put("size", file.getSize());
@@ -289,11 +290,12 @@ public class DiskFileController extends BaseController
         return AjaxResult.success(filteredList);
     }
 
+
     /**
-     * 本地资源通用下载
+     * hadoop文件下载
      */
     @GetMapping("/download/zip")
-    public void resourceDownload(DownloadBo downloadBo, HttpServletRequest request, HttpServletResponse response) {
+    public void hadoopDownload(DownloadBo downloadBo, HttpServletRequest request, HttpServletResponse response) {
         List<DiskFile> diskFiles;
         String dest = RuoYiConfig.getProfile()+"/";
         if (StringUtils.isNotEmpty(downloadBo.getUuid())&&StringUtils.isNotEmpty(downloadBo.getSecretKey())) {
@@ -313,10 +315,8 @@ public class DiskFileController extends BaseController
         List<String> downloadPaths = new ArrayList<>();
 
         diskFiles.forEach(diskFile -> {
-            // 本地资源路径
-            String localPath = RuoYiConfig.getProfile();
             // 数据库资源地址
-            String downloadPath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
+            String downloadPath = StringUtils.substringAfter(diskFile.getUrl(), FILE_BASE);
             downloadPaths.add(downloadPath);
         });
         String downloadPath = dest + ".zip";
@@ -324,7 +324,23 @@ public class DiskFileController extends BaseController
         try {
             String finalDest = dest;
             try {
-                downloadPaths.forEach(path -> FileUtil.copy(path, finalDest,true));
+                downloadPaths.forEach(path -> {
+                    // 本地资源路径
+                    String localPath = RuoYiConfig.getProfile();
+                    path = path.replace("--","/");
+                    //从远程下载文件到本地
+                    hadoopTemplate.download(path,localPath+path);
+                });
+            } catch (Exception e) {
+                log.debug("diskfile copy文件报错");
+            }
+
+            try {
+                downloadPaths.forEach(path -> {
+                    // 本地资源路径
+                    String localPath = RuoYiConfig.getProfile();
+                    FileUtil.copy(localPath+path, finalDest,true);
+                });
             } catch (Exception e) {
                 log.debug("diskfile copy文件报错");
             }
@@ -343,8 +359,72 @@ public class DiskFileController extends BaseController
         } finally {
             FileUtil.del(dest);
             FileUtils.deleteFile(downloadPath);
+            downloadPaths.forEach(path -> {
+                // 本地资源路径
+                String localPath = RuoYiConfig.getProfile();
+                path = path.replace("--","/");
+                FileUtil.del(localPath+path);
+            });
         }
 
     }
+
+    /**
+     * 本地资源通用下载
+     */
+//    @GetMapping("/download/zip")
+//    public void resourceDownload(DownloadBo downloadBo, HttpServletRequest request, HttpServletResponse response) {
+//        List<DiskFile> diskFiles;
+//        String dest = RuoYiConfig.getProfile()+"/";
+//        if (StringUtils.isNotEmpty(downloadBo.getUuid())&&StringUtils.isNotEmpty(downloadBo.getSecretKey())) {
+//            diskFiles = diskFileService.selectDiskFileListByIds(Arrays.stream(downloadBo.getIds().split(","))
+//                    .map(String::trim)
+//                    .map(Long::valueOf)
+//                    .toArray(Long[]::new));
+//            dest = dest + downloadBo.getUuid();
+//        } else {
+//            diskFiles = diskFileService.selectDiskFileListByIds(Arrays.stream(downloadBo.getIds().split(","))
+//                    .map(String::trim)
+//                    .map(Long::valueOf)
+//                    .toArray(Long[]::new),getUserId());
+//            dest = dest + RandomUtil.randomString(12);
+//        }
+//        FileUtil.mkdir(dest);
+//        List<String> downloadPaths = new ArrayList<>();
+//
+//        diskFiles.forEach(diskFile -> {
+//            // 本地资源路径
+//            String localPath = RuoYiConfig.getProfile();
+//            // 数据库资源地址
+//            String downloadPath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
+//            downloadPaths.add(downloadPath);
+//        });
+//        String downloadPath = dest + ".zip";
+//
+//        try {
+//            String finalDest = dest;
+//            try {
+//                downloadPaths.forEach(path -> FileUtil.copy(path, finalDest,true));
+//            } catch (Exception e) {
+//                log.debug("diskfile copy文件报错");
+//            }
+//            // 调用zip方法进行压缩
+//            ZipUtil.zip(dest, downloadPath);
+//            byte[] data = FileUtil.readBytes(FileUtil.file(downloadPath));
+//            response.reset();
+//            response.addHeader("Access-Control-Allow-Origin", "*");
+//            response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
+//            response.setHeader("Content-Disposition", "attachment; filename=\"ruoyi.zip\"");
+//            response.addHeader("Content-Length", "" + data.length);
+//            response.setContentType("application/octet-stream; charset=UTF-8");
+//            IOUtils.write(data, response.getOutputStream());
+//        } catch (IOException e) {
+//            log.error("diskFile 下载文件失败", e);
+//        } finally {
+//            FileUtil.del(dest);
+//            FileUtils.deleteFile(downloadPath);
+//        }
+//
+//    }
 
 }

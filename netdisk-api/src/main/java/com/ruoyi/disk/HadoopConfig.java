@@ -24,7 +24,7 @@ public class HadoopConfig {
     private String hdfsSite;
     @Value("${hdfs.core-site}")
     private String coreSite;
- 
+
     @Bean("fileSystem")
     public FileSystem createFs() throws Exception {
  
@@ -34,7 +34,7 @@ public class HadoopConfig {
         org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
 //        conf.addResource(coreSite);
 //        conf.addResource(hdfsSite);
-        conf.set("fs.defaultFS","hdfs://192.168.1.156:9000");
+        conf.set("fs.defaultFS",hdfsSite);
         conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
         log.info("===============【hadoop configuration info start.】===============");
         log.info("【hadoop conf】: size:{}, {}", conf.size(), conf.toString());

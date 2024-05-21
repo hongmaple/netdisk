@@ -1,10 +1,7 @@
 package com.ruoyi.disk;
  
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,12 +11,13 @@ import org.springframework.stereotype.Component;
  
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 
 /**
- * @author yanan.wang
+ * @author maple
  * @describe
- * @createTime 2019-12-19 15:15
+ * @createTime 2024/05/12
  */
 @Component
 @ConditionalOnBean(FileSystem.class)
@@ -150,7 +148,22 @@ public class HadoopTemplate {
         } catch (IOException e) {
             e.printStackTrace();
         }
- 
+
+    }
+
+    public void open(String destPath, OutputStream out) {
+        FSDataInputStream in = null;
+        try {
+            in = fileSystem.open(new Path(destPath));
+            IOUtils.copyBytes(in,out,4096,false);
+            in.seek(0);
+            IOUtils.copyBytes(in,out,4096,false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            IOUtils.closeStream(in);
+        }
+
     }
 
     //获取特定路径的所有文件
