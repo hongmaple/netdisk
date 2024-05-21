@@ -3,6 +3,7 @@ package com.ruoyi.disk.service.impl;
 import java.util.List;
 import java.util.Objects;
 
+import cn.hutool.core.util.RandomUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.uuid.IdUtils;
 import com.ruoyi.system.service.ISysConfigService;
@@ -64,7 +65,7 @@ public class DiskStorageServiceImpl implements IDiskStorageService
         if (Objects.nonNull(diskStorage1)) return updateDiskStorage(diskStorage);
         diskStorage.setCreateTime(DateUtils.getNowDate());
         diskStorage.setTotalCapacity(Long.valueOf(configService.selectConfigByKey("storage.capacity")));
-        diskStorage.setBaseDir(IdUtils.fastSimpleUUID());
+        diskStorage.setBaseDir(RandomUtil.randomString(6));
         return diskStorageMapper.insertDiskStorage(diskStorage);
     }
 
