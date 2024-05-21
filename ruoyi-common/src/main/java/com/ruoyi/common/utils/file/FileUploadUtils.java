@@ -58,7 +58,7 @@ public class FileUploadUtils
     {
         try
         {
-            return upload(getDefaultBaseDir(),true, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(getDefaultBaseDir(),true, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,null);
         }
         catch (Exception e)
         {
@@ -74,11 +74,11 @@ public class FileUploadUtils
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file) throws IOException
+    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file,String fileName) throws IOException
     {
         try
         {
-            return upload(baseDir,isDatePath, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(baseDir,isDatePath, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION,fileName);
         }
         catch (Exception e)
         {
@@ -98,7 +98,7 @@ public class FileUploadUtils
      * @throws IOException 比如读写文件出错时
      * @throws InvalidExtensionException 文件校验异常
      */
-    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file, String[] allowedExtension)
+    public static final String upload(String baseDir,boolean isDatePath, MultipartFile file, String[] allowedExtension,String fileName)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException
     {
@@ -110,7 +110,7 @@ public class FileUploadUtils
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = extractFilename(file,isDatePath);
+        if (StringUtils.isBlank(fileName)) fileName = extractFilename(file,isDatePath);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
         file.transferTo(Paths.get(absPath));
