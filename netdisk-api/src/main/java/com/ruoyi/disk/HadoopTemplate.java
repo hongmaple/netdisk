@@ -1,6 +1,7 @@
 package com.ruoyi.disk;
  
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.IOUtils;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 
 /**
@@ -154,7 +156,9 @@ public class HadoopTemplate {
     public void open(String destPath, OutputStream out) {
         FSDataInputStream in = null;
         try {
-            in = fileSystem.open(new Path(destPath));
+            Configuration conf = new Configuration();
+            FileSystem fs = FileSystem.get(URI.create(destPath), conf);
+            in = fs.open(new Path(destPath));
             IOUtils.copyBytes(in,out,4096,false);
             in.seek(0);
             IOUtils.copyBytes(in,out,4096,false);

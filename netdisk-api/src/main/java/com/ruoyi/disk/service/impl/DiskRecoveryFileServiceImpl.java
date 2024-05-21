@@ -46,6 +46,7 @@ public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService
     @Autowired
     private IDiskStorageService diskStorageService;
 
+    @Autowired
     private HadoopTemplate hadoopTemplate;
 
     /**
