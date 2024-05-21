@@ -215,14 +215,15 @@ public class DiskFileController extends BaseController
             String filePath = RuoYiConfig.getUploadPath();
             // 获取当前用户本人的存储目录
             DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
+            if (Objects.isNull(diskStorage)) throw new ServiceException("未初始化存储空间");
             if (diskStorage.getTotalCapacity()-diskStorage.getUsedCapacity()<=0) throw new ServiceException("存储空间不足");
             if (parentId.equals(0L)) {
-                if (Objects.nonNull(diskStorage)) filePath = filePath+"/"+diskStorage.getBaseDir();
+                filePath = filePath+"/"+diskStorage.getBaseDir();
             } else {
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(parentId);
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
                 String[] localPaths = RuoYiConfig.getUploadPath().split("/");
-                if (Objects.nonNull(diskStorage)) filePath = filePath+"/"+diskStorage.getBaseDir()+parentIdFile.getUrl()
+                filePath = filePath+"/"+diskStorage.getBaseDir()+parentIdFile.getUrl()
                         .replace(Constants.RESOURCE_PREFIX,"").replace(localPaths[localPaths.length-1],"")
                         .replace("/"+diskStorage.getBaseDir(),"");
             }
@@ -232,8 +233,7 @@ public class DiskFileController extends BaseController
             String url = serverConfig.getUrl() + fileName;
             DiskFile diskFile = new DiskFile();
             diskFile.setCreateId(getUserId());
-            String[] fileNames = fileName.split("/");
-            diskFile.setName(fileNames[fileNames.length-1]);
+            diskFile.setName(RandomUtil.randomString(4)+"_"+file.getOriginalFilename());
             diskFile.setOldName(file.getOriginalFilename());
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
