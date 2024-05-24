@@ -30,7 +30,7 @@ public class HadoopController {
     @GetMapping("/{descPath}")
     public ResponseEntity<ByteArrayResource> preview(@PathVariable("descPath") String descPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        hadoopTemplate.open(hdfsSite+descPath.replace("--","/"),outputStream);
+        hadoopTemplate.open(descPath.replace("--","/"),outputStream);
 
         byte[] byteArray = outputStream.toByteArray();
 

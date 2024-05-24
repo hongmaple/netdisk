@@ -156,14 +156,9 @@ public class DiskFileController extends BaseController
                         +"/"+parentPaths[parentPaths.length-1]+"/"+diskFile.getName();
             }
             diskFile.setUrl(url);
-            // 本地资源路径
-            String localPath = RuoYiConfig.getProfile();
             String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
-            // 数据库资源地址
-            String filePath = localPath + path;
-            FileUtil.mkdir(filePath);
             try {
-                hadoopTemplate.existDir(path,true);
+                hadoopTemplate.existDir(path.replace("/","--"),true);
             } catch (IOException e) {
                 log.debug(e.getMessage());
             }
@@ -245,8 +240,9 @@ public class DiskFileController extends BaseController
             // 上传并返回新文件名称
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             // 上传到hdfs
-            String descPath = StringUtils.substringAfter(filePath+File.separator+RandomUtil.randomString(9)+FileUploadUtils.getExtension(file), Constants.RESOURCE_PREFIX);
-            hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ descPath, descPath);
+
+            String descPath = filePath.replace(RuoYiConfig.getUploadPath(),"")+"/"+RandomUtil.randomString(9)+"."+FileUploadUtils.getExtension(file);
+            hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX), descPath);
             String url = serverConfig.getUrl() + FILE_BASE + descPath.replace("/","--");
             diskFile.setCreateId(getUserId());
             diskFile.setOldName(file.getOriginalFilename());

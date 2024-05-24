@@ -1,5 +1,6 @@
 package com.ruoyi.disk;
  
+import com.ruoyi.common.utils.file.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
@@ -156,9 +157,7 @@ public class HadoopTemplate {
     public void open(String destPath, OutputStream out) {
         FSDataInputStream in = null;
         try {
-            Configuration conf = new Configuration();
-            FileSystem fs = FileSystem.get(URI.create(destPath), conf);
-            in = fs.open(new Path(destPath));
+            in = fileSystem.open(new Path(destPath));
             IOUtils.copyBytes(in,out,4096,false);
             in.seek(0);
             IOUtils.copyBytes(in,out,4096,false);
