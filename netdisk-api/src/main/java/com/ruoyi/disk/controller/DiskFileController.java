@@ -245,7 +245,7 @@ public class DiskFileController extends BaseController
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             // 上传到hdfs
 
-            String descPath = filePath.replace(RuoYiConfig.getProfile(),"")+"/"+RandomUtil.randomString(9)+"."+ extension;
+            String descPath = StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX);
             hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX), descPath);
             String url = serverConfig.getUrl() + Constants.HADOOP_PREFIX + descPath.replace("/","--");
             diskFile.setCreateId(getUserId());
