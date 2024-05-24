@@ -77,8 +77,6 @@ public class DiskFileController extends BaseController
 
     private static final String FILE_DELIMETER = ",";
 
-    private static final String FILE_BASE = "/hadoop/";
-
     @Autowired
     private HadoopTemplate hadoopTemplate;
 
@@ -131,7 +129,7 @@ public class DiskFileController extends BaseController
     }
 
     /**
-     * 新增文件
+     * 创建文件夹/或保存文件到数据库
      */
     @PreAuthorize("@ss.hasPermi('disk:file:add')")
     @Log(title = "文件", businessType = BusinessType.INSERT)
@@ -139,26 +137,25 @@ public class DiskFileController extends BaseController
     public AjaxResult add(@RequestBody DiskFile diskFile)
     {
         diskFile.setCreateId(getUserId());
+        // 获取当前用户本人的存储目录
+        DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
+        if (Objects.isNull(diskStorage)) throw new ServiceException("空间未初始化");
         if (diskFile.getIsDir()==1) {
             //是文件夹，设置url
             // 上传文件路径
-            String url = Constants.RESOURCE_PREFIX;
-            // 获取当前用户本人的存储目录
-            DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
-            String[] localPaths = RuoYiConfig.getUploadPath().split("/");
-            if (diskFile.getParentId()==0) {
-                if (Objects.nonNull(diskStorage)) url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()+"/"+diskFile.getName();
-            }else {
+            String url = "";
+            if (diskFile.getParentId() == 0) {
+                url = "--" + diskStorage.getBaseDir() + "--" + diskFile.getName();
+            } else {
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(diskFile.getParentId());
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
-                String[] parentPaths = parentIdFile.getUrl().split("/");
-                if (Objects.nonNull(diskStorage)) url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()
-                        +"/"+parentPaths[parentPaths.length-1]+"/"+diskFile.getName();
+                String parentPath = StringUtils.substringAfter(parentIdFile.getUrl(), Constants.HADOOP_PREFIX);
+                url = "--" + diskStorage.getBaseDir() + "--" + parentPath + "--" + diskFile.getName();
             }
-            diskFile.setUrl(url);
-            String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
+            diskFile.setUrl(Constants.HADOOP_PREFIX + url);
+            String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX);
             try {
-                hadoopTemplate.existDir(path.replace("/","--"),true);
+                hadoopTemplate.existDir(path.replace("/", "--"), true);
             } catch (IOException e) {
                 log.debug(e.getMessage());
             }
@@ -218,7 +215,7 @@ public class DiskFileController extends BaseController
         try
         {
             // 上传文件路径
-            String filePath = RuoYiConfig.getUploadPath();
+            String filePath = RuoYiConfig.getProfile();
             // 获取当前用户本人的存储目录
             DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
             if (Objects.isNull(diskStorage)) throw new ServiceException("未初始化存储空间");
@@ -228,10 +225,9 @@ public class DiskFileController extends BaseController
             } else {
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(parentId);
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
-                String[] localPaths = RuoYiConfig.getUploadPath().split("/");
                 filePath = filePath+"/"+diskStorage.getBaseDir()+parentIdFile.getUrl()
-                        .replace(Constants.RESOURCE_PREFIX,"").replace(localPaths[localPaths.length-1],"")
-                        .replace("/"+diskStorage.getBaseDir(),"");
+                        .replace(Constants.HADOOP_PREFIX,"")
+                        .replace("--","/");
             }
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
             DiskFile diskFile = new DiskFile();
@@ -241,21 +237,21 @@ public class DiskFileController extends BaseController
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             // 上传到hdfs
 
-            String descPath = filePath.replace(RuoYiConfig.getUploadPath(),"")+"/"+RandomUtil.randomString(9)+"."+FileUploadUtils.getExtension(file);
+            String descPath = filePath.replace(RuoYiConfig.getProfile(),"")+"/"+RandomUtil.randomString(9)+"."+FileUploadUtils.getExtension(file);
             hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX), descPath);
-            String url = serverConfig.getUrl() + FILE_BASE + descPath.replace("/","--");
+            String url = serverConfig.getUrl() + Constants.HADOOP_PREFIX + descPath.replace("/","--");
             diskFile.setCreateId(getUserId());
             diskFile.setOldName(file.getOriginalFilename());
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
             diskFile.setParentId(parentId);
-            diskFile.setUrl(FILE_BASE + descPath.replace("/","--"));
+            diskFile.setUrl(Constants.HADOOP_PREFIX + StringUtils.substringAfter(descPath, Constants.HADOOP_PREFIX).replace("/","--"));
             diskFile.setSize(file.getSize());
             diskFile.setType(diskFileService.getType(FileUploadUtils.getExtension(file)));
             diskFileService.save(diskFile,diskStorage);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
-            ajax.put("fileName", FILE_BASE + descPath.replace("/","--"));
+            ajax.put("fileName", url.replace(serverConfig.getUrl(),""));
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             ajax.put("size", file.getSize());
@@ -292,7 +288,7 @@ public class DiskFileController extends BaseController
      * hadoop文件下载
      */
     @GetMapping("/download/zip")
-    public void hadoopDownload(DownloadBo downloadBo, HttpServletRequest request, HttpServletResponse response) {
+    public void hadoopDownload(DownloadBo downloadBo, HttpServletResponse response) {
         List<DiskFile> diskFiles;
         String dest = RuoYiConfig.getProfile()+"/";
         if (StringUtils.isNotEmpty(downloadBo.getUuid())&&StringUtils.isNotEmpty(downloadBo.getSecretKey())) {
@@ -313,7 +309,7 @@ public class DiskFileController extends BaseController
 
         diskFiles.forEach(diskFile -> {
             // 数据库资源地址
-            String downloadPath = StringUtils.substringAfter(diskFile.getUrl(), FILE_BASE);
+            String downloadPath = StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX);
             downloadPaths.add(downloadPath);
         });
         String downloadPath = dest + ".zip";

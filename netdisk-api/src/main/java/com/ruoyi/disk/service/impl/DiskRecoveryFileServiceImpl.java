@@ -130,7 +130,7 @@ public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService
         diskFileService.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
         allDelFiles.forEach(diskFile -> {
             try {
-                hadoopTemplate.rmdir(StringUtils.substringAfter(diskFile.getUrl(), "/hadoop/").replace("--","/"),null);
+                hadoopTemplate.rmdir(StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX).replace("--","/"),null);
             } catch (IORuntimeException e) {
                 log.debug("文件删除失败 文件不存在 {0}",e);
             }

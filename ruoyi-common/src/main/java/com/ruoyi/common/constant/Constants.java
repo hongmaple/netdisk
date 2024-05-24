@@ -115,6 +115,11 @@ public class Constants
     public static final String RESOURCE_PREFIX = "/profile";
 
     /**
+     * hadoop文件 前缀
+     */
+    public static final String HADOOP_PREFIX = "/hadoop/";
+
+    /**
      * RMI 远程方法调用
      */
     public static final String LOOKUP_RMI = "rmi:";
