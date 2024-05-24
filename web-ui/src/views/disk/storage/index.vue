@@ -163,9 +163,9 @@
     <!-- 添加或修改用户存储对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="基础目录" prop="baseDir">
+       <!-- <el-form-item label="基础目录" prop="baseDir">
           <el-input v-model="form.baseDir" placeholder="请输入基础目录" />
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="总容量" prop="totalCapacity">
           <el-input v-model="form.totalCapacity" placeholder="请输入总容量" />
         </el-form-item>
