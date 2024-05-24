@@ -30,7 +30,8 @@ public class HadoopController {
     @GetMapping("/{descPath}")
     public ResponseEntity<ByteArrayResource> preview(@PathVariable("descPath") String descPath) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        hadoopTemplate.open(descPath.replace("--","/"),outputStream);
+        hadoopTemplate.open(descPath.replace("--", "/"), outputStream);
+        String fileExtension = hadoopTemplate.getFileExtension(descPath.replace("--", "/"));
 
         byte[] byteArray = outputStream.toByteArray();
 
@@ -39,7 +40,21 @@ public class HadoopController {
 
         // 设置响应头
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
+
+        switch (fileExtension) {
+            case "png":
+                headers.setContentType(MediaType.IMAGE_PNG);
+                break;
+            case "gif":
+                headers.setContentType(MediaType.IMAGE_GIF);
+                break;
+            case "jpeg":
+                headers.setContentType(MediaType.IMAGE_JPEG);
+                break;
+            default:
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                break;
+        }
 
         // 返回字节数组资源作为响应
         return ResponseEntity.ok()

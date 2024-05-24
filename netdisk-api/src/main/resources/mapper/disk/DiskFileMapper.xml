@@ -53,10 +53,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </select>
     <select id="verify" resultType="java.lang.Integer">
-        select count(1) from disk_file where del_flag = 0 and name=#{name} and parent_id = #{parentId} and create_id=#{userId}
-        <if test="id != null">
-            and id != #{id}
-        </if>
+        select count(1) from disk_file
+        <where>
+            <if test="userId != null">
+                and create_id = #{userId}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="name != null">
+                and name=#{name}
+            </if>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="delFlag != null">
+                and del_flag = #{delFlag}
+            </if>
+        </where>
     </select>
     <select id="selectDiskFileListByIds" resultMap="DiskFileResult">
         <include refid="selectDiskFileVo"/>

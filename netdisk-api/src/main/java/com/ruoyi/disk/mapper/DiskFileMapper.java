@@ -66,7 +66,7 @@ public interface DiskFileMapper
 
     List<Long> selectDiskFileByParentIds(Long[] ids);
 
-    int verify(@Param("name") String name, @Param("parentId") Long parentId, @Param("id") Long id,@Param("userId") Long userId);
+    int verify(@Param("name") String name, @Param("parentId") Long parentId, @Param("id") Long id,@Param("userId") Long userId,@Param("delFlag") String delFlag);
 
     List<DiskFile> selectDiskFileListByIds(Long[] ids);
 

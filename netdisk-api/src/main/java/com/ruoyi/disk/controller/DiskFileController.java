@@ -3,6 +3,7 @@ package com.ruoyi.disk.controller;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -150,14 +152,18 @@ public class DiskFileController extends BaseController
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(diskFile.getParentId());
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
                 String parentPath = StringUtils.substringAfter(parentIdFile.getUrl(), Constants.HADOOP_PREFIX);
-                url = "--" + diskStorage.getBaseDir() + "--" + parentPath + "--" + diskFile.getName();
+                url = parentPath + "--" + diskFile.getName();
             }
             diskFile.setUrl(Constants.HADOOP_PREFIX + url);
-            String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX);
+            String path = StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX).replace("--", "/");
+            // 数据库资源地址
+            //String filePath = RuoYiConfig.getProfile() + path;
+            //FileUtil.mkdir(filePath);
+            //hadoopTemplate.copyFileToHDFS(true,false,filePath,path);
             try {
-                hadoopTemplate.existDir(path.replace("/", "--"), true);
+                hadoopTemplate.existDir(path,true);
             } catch (IOException e) {
-                log.debug(e.getMessage());
+                log.info("创建文件夹失败："+e);
             }
             diskFile.setType(5);
         }
@@ -210,10 +216,12 @@ public class DiskFileController extends BaseController
      * 通用上传请求（单个）
      */
     @PostMapping("/upload/{parentId}")
+    @Transactional
     public AjaxResult uploadFile(MultipartFile file,@PathVariable Long parentId) throws Exception
     {
         try
         {
+            String extension = FileUploadUtils.getExtension(file);
             // 上传文件路径
             String filePath = RuoYiConfig.getProfile();
             // 获取当前用户本人的存储目录
@@ -225,8 +233,8 @@ public class DiskFileController extends BaseController
             } else {
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(parentId);
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
-                filePath = filePath+"/"+diskStorage.getBaseDir()+parentIdFile.getUrl()
-                        .replace(Constants.HADOOP_PREFIX,"")
+                filePath = filePath+
+                        StringUtils.substringAfter(parentIdFile.getUrl(), Constants.HADOOP_PREFIX)
                         .replace("--","/");
             }
             diskSensitiveWordService.filterSensitiveWord(file.getOriginalFilename());
@@ -237,7 +245,7 @@ public class DiskFileController extends BaseController
             fileName = FileUploadUtils.upload(filePath,false, file,fileName);
             // 上传到hdfs
 
-            String descPath = filePath.replace(RuoYiConfig.getProfile(),"")+"/"+RandomUtil.randomString(9)+"."+FileUploadUtils.getExtension(file);
+            String descPath = filePath.replace(RuoYiConfig.getProfile(),"")+"/"+RandomUtil.randomString(9)+"."+ extension;
             hadoopTemplate.copyFileToHDFS(true,true,RuoYiConfig.getProfile()+ StringUtils.substringAfter(fileName, Constants.RESOURCE_PREFIX), descPath);
             String url = serverConfig.getUrl() + Constants.HADOOP_PREFIX + descPath.replace("/","--");
             diskFile.setCreateId(getUserId());
@@ -245,9 +253,9 @@ public class DiskFileController extends BaseController
             diskFile.setIsDir(0);
             diskFile.setOrderNum(0);
             diskFile.setParentId(parentId);
-            diskFile.setUrl(Constants.HADOOP_PREFIX + StringUtils.substringAfter(descPath, Constants.HADOOP_PREFIX).replace("/","--"));
+            diskFile.setUrl(url.replace(serverConfig.getUrl(),""));
             diskFile.setSize(file.getSize());
-            diskFile.setType(diskFileService.getType(FileUploadUtils.getExtension(file)));
+            diskFile.setType(diskFileService.getType(extension));
             diskFileService.save(diskFile,diskStorage);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
@@ -255,7 +263,7 @@ public class DiskFileController extends BaseController
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             ajax.put("size", file.getSize());
-            ajax.put("type", FileUploadUtils.getExtension(file));
+            ajax.put("type", extension);
             return ajax;
         }
         catch (Exception e)
@@ -302,44 +310,29 @@ public class DiskFileController extends BaseController
                     .map(String::trim)
                     .map(Long::valueOf)
                     .toArray(Long[]::new),getUserId());
-            dest = dest + RandomUtil.randomString(12);
+            dest = dest + RandomUtil.randomString(6);
         }
-        FileUtil.mkdir(dest);
-        List<String> downloadPaths = new ArrayList<>();
-
-        diskFiles.forEach(diskFile -> {
-            // 数据库资源地址
-            String downloadPath = StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX);
-            downloadPaths.add(downloadPath);
-        });
         String downloadPath = dest + ".zip";
 
         try {
-            String finalDest = dest;
+            ByteArrayOutputStream out = null;
             try {
-                downloadPaths.forEach(path -> {
+                    out = new ByteArrayOutputStream();
+                    ZipOutputStream zos = new ZipOutputStream(out);
+                for (int i = 0; i < diskFiles.size(); i++) {
+                    String path = StringUtils.substringAfter(diskFiles.get(i).getUrl(),Constants.HADOOP_PREFIX);
                     // 本地资源路径
-                    String localPath = RuoYiConfig.getProfile();
                     path = path.replace("--","/");
                     //从远程下载文件到本地
-                    hadoopTemplate.download(path,localPath+path);
-                });
+                    hadoopTemplate.down(path,zos,out);
+                }
+                zos.close();
             } catch (Exception e) {
-                log.debug("diskfile copy文件报错");
-            }
-
-            try {
-                downloadPaths.forEach(path -> {
-                    // 本地资源路径
-                    String localPath = RuoYiConfig.getProfile();
-                    FileUtil.copy(localPath+path, finalDest,true);
-                });
-            } catch (Exception e) {
-                log.debug("diskfile copy文件报错");
+                log.debug("diskfile 从远程下载文件到本地报错: "+e);
             }
             // 调用zip方法进行压缩
-            ZipUtil.zip(dest, downloadPath);
-            byte[] data = FileUtil.readBytes(FileUtil.file(downloadPath));
+            byte[] data = out.toByteArray();
+            out.close();
             response.reset();
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
@@ -350,14 +343,7 @@ public class DiskFileController extends BaseController
         } catch (IOException e) {
             log.error("diskFile 下载文件失败", e);
         } finally {
-            FileUtil.del(dest);
             FileUtils.deleteFile(downloadPath);
-            downloadPaths.forEach(path -> {
-                // 本地资源路径
-                String localPath = RuoYiConfig.getProfile();
-                path = path.replace("--","/");
-                FileUtil.del(localPath+path);
-            });
         }
 
     }
