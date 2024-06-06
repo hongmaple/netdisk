@@ -38,7 +38,6 @@ public class SysUser extends BaseEntity
     private String nickName;
 
     /** 用户类型00系统，01客户 */
-    @ApiModelProperty("用户类型00系统，01客户")
     private String userType;
 
     /** 用户邮箱 */
