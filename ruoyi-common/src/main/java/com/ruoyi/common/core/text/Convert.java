@@ -2,6 +2,7 @@ package com.ruoyi.common.core.text;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.text.NumberFormat;
@@ -364,6 +365,10 @@ public class Convert
      */
     public static String[] toStrArray(String str)
     {
+        if (StringUtils.isEmpty(str))
+        {
+            return new String[] {};
+        }
         return toStrArray(",", str);
     }
 
@@ -977,7 +982,12 @@ public class Convert
         String s = "";
         for (int i = 0; i < fraction.length; i++)
         {
-            s += (digit[(int) (Math.floor(n * 10 * Math.pow(10, i)) % 10)] + fraction[i]).replaceAll("(零.)+", "");
+            // 优化double计算精度丢失问题
+            BigDecimal nNum = new BigDecimal(n);
+            BigDecimal decimal = new BigDecimal(10);
+            BigDecimal scale = nNum.multiply(decimal).setScale(2, RoundingMode.HALF_EVEN);
+            double d = scale.doubleValue();
+            s += (digit[(int) (Math.floor(d * Math.pow(10, i)) % 10)] + fraction[i]).replaceAll("(零.)+", "");
         }
         if (s.length() < 1)
         {
