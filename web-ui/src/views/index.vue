@@ -52,7 +52,7 @@ export default {
   data() {
     return {
       // 版本号
-      version: "3.8.5",
+      version: "3.8.7",
       // 用户存储表格数据
       storageList: [],
       typeCapacityStats: null,

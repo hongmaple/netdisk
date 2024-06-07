@@ -3,7 +3,7 @@ ruoyi:
   # 名称
   name: netdisk
   # 版本
-  version: 3.8.5
+  version: 3.8.7
   # 版权年份
   copyrightYear: 2024
   # 实例演示开关
@@ -76,7 +76,7 @@ spring:
     # 数据库索引
     database: 0
     # 密码
-    password: 
+    password: maple168
     # 连接超时时间
     timeout: 10s
     lettuce:
