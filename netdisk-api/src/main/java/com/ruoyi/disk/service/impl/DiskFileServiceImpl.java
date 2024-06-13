@@ -73,8 +73,10 @@ public class DiskFileServiceImpl implements IDiskFileService
     {
         diskFile.setCreateTime(DateUtils.getNowDate());
         validEntityBeforeSave(diskFile);
-        int i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),null, SecurityUtils.getUserId());
+        int i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),null, SecurityUtils.getUserId(),"0");
         if (i>0) throw new ServiceException("名称重复");
+        i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),null, SecurityUtils.getUserId(),"2");
+        if (i>0) throw new ServiceException("与回收站中的重名了");
         return diskFileMapper.insertDiskFile(diskFile);
     }
 
@@ -94,8 +96,10 @@ public class DiskFileServiceImpl implements IDiskFileService
     {
         diskFile.setUpdateTime(DateUtils.getNowDate());
         validEntityBeforeSave(diskFile);
-        int i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),diskFile.getId(), SecurityUtils.getUserId());
+        int i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),diskFile.getId(), SecurityUtils.getUserId(),"0");
         if (i>0) throw new ServiceException("名称重复");
+        i = diskFileMapper.verify(diskFile.getName(), diskFile.getParentId(),null, SecurityUtils.getUserId(),"2");
+        if (i>0) throw new ServiceException("与回收站中的重名了");
         return diskFileMapper.updateDiskFile(diskFile);
     }
 
