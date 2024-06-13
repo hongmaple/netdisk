@@ -299,7 +299,7 @@ export default {
       // 表单校验
       rules: {
       },
-      shareBaseUrl: 'http://localhost/external/share/share-list?',
+      shareBaseUrl: '',
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now();
@@ -354,7 +354,7 @@ export default {
   created() {
     this.getList();
     this.getConfigKey("font.baseUrl").then(response => {
-      this.shareBaseUrl = response.msg;
+      this.shareBaseUrl = response.msg + "/external/share/share-list?";
     });
   },
   methods: {
