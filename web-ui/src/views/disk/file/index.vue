@@ -441,6 +441,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        name: [
+          { required: true, message: "名称不能为空", trigger: "blur" }
+        ],
       },
       uploadFileUrl: process.env.VUE_APP_BASE_API + "/disk/file/upload/"+0,
       headers: {
@@ -465,14 +468,22 @@ export default {
         type: "0"
       },
       openShare: false,
-      shareRules: {},
+      shareRules: {
+        secretKey: [
+          { required: true, message: "密钥不能为空", trigger: "blur" }
+        ],
+        expirationTime: [
+          { required: true, message: "过期时间不能为空", trigger: "blur" },
+          { rangelength: [4-6], message: "密钥长度4-6", trigger: "blur" }
+        ],
+      },
       shareResult: {},
       shareOk: false,
-      shareBaseUrl: 'http://localhost/external/share/share-list?',
+      shareBaseUrl: '',
       skipList: [],
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() > Date.now();
+          return time.getTime() <= Date.now();
         },
         shortcuts: [{
           text: '三天',
@@ -526,7 +537,7 @@ export default {
     this.queryParams.parentId = 0;
     this.getList();
     this.getConfigKey("font.baseUrl").then(response => {
-      this.shareBaseUrl = response.msg;
+      this.shareBaseUrl = response.msg + "/external/share/share-list?";
     });
   },
   computed: {
@@ -788,14 +799,25 @@ export default {
     },
     /** 提交按钮 */
     submitShareForm() {
-      this.$refs["shareFrom"].validate(valid => {
-        if (valid) {
-          this.shareFrom.fileIds = this.ids.join(",");
-          addShare(this.shareFrom).then(response => {
-            this.shareResult = response.data;
-            this.shareOk = true;
-          });
-        }
+
+      if (this.shareFrom.type===0 && this.shareFrom.expirationTimeRadio==="2") {
+        this.$refs["shareFrom"].validateField("expirationTime",valid => {
+          if (!valid) {
+            return;
+          }
+        });
+      }
+      if (this.shareFrom.type===0 && this.shareFrom.secretKeyRadio==="2") {
+        this.$refs["shareFrom"].validateField("secretKey",valid => {
+          if (!valid) {
+            return;
+          }
+        });
+      }
+      this.shareFrom.fileIds = this.ids.join(",");
+      addShare(this.shareFrom).then(response => {
+        this.shareResult = response.data;
+        this.shareOk = true;
       });
     },
     copySuccess() {
