@@ -525,6 +525,9 @@ export default {
   created() {
     this.queryParams.parentId = 0;
     this.getList();
+    this.getConfigKey("font.baseUrl").then(response => {
+      this.shareBaseUrl = response.msg;
+    });
   },
   computed: {
     // 是否显示提示

@@ -353,6 +353,9 @@ export default {
   },
   created() {
     this.getList();
+    this.getConfigKey("font.baseUrl").then(response => {
+      this.shareBaseUrl = response.msg;
+    });
   },
   methods: {
     /** 查询分享列表 */
