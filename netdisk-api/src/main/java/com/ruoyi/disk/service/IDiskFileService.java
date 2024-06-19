@@ -89,4 +89,11 @@ public interface IDiskFileService
     String getTypeName(Integer type);
 
     List<Map<String, Object>> fileTypeNumStats(Long userId);
+
+    /**
+     * 批量删除数据库中的文件，和实际存储的文件
+     * @param delFileIds
+     * @return
+     */
+    int deleteDiskFileByIdsAndRemoveFile(List<Long> delFileIds);
 }

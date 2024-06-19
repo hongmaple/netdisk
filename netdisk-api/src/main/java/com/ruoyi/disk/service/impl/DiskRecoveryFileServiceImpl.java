@@ -124,17 +124,7 @@ public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService
 
         //删除文件
         List<Long> delFileIds = diskRecoveryFiles.stream().map(DiskRecoveryFile::getFileId).collect(Collectors.toList());
-        List<DiskFile> allDelFiles = diskFileService.selectDiskFileListByIdsIgnoreDel(delFileIds.toArray(new Long[0]));
-        List<DiskFile> allDiskFiles = diskFileService.selectAllByUserId(SecurityUtils.getUserId());
-        delFileIds.forEach(parentId -> diskFileService.getChildPerms(allDiskFiles,allDelFiles,parentId));
-        diskFileService.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
-        allDelFiles.forEach(diskFile -> {
-            try {
-                hadoopTemplate.rmdir(StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX).replace("--","/"),null);
-            } catch (IORuntimeException e) {
-                log.debug("文件删除失败 文件不存在 {0}",e);
-            }
-        });
+        diskFileService.deleteDiskFileByIdsAndRemoveFile(delFileIds);
         return diskRecoveryFileMapper.deleteDiskRecoveryFileByIds(ids);
     }
 
