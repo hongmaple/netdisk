@@ -9,6 +9,15 @@ export function listStorage(query) {
   })
 }
 
+// 查询用户存储的文件列表 （管理用）
+export function getStorageFileListByUserId(query,userId) {
+  return request({
+    url: '/disk/storage/getStorageFileListByUserId/'+userId,
+    method: 'get',
+    params: query
+  })
+}
+
 // 查询用户存储列表
 export function myListStorage(query) {
   return request({
@@ -56,6 +65,14 @@ export function updateStorage(data) {
 export function delStorage(id) {
   return request({
     url: '/disk/storage/' + id,
+    method: 'delete'
+  })
+}
+
+// 删除用户存储
+export function formattedDisk(userId) {
+  return request({
+    url: '/disk/storage/formattedDisk/' + userId,
     method: 'delete'
   })
 }

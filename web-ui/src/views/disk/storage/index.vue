@@ -61,17 +61,17 @@
           v-hasPermi="['disk:storage:edit']"
         >修改</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['disk:storage:remove']"
-        >删除</el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--          type="danger"-->
+<!--          plain-->
+<!--          icon="el-icon-delete"-->
+<!--          size="mini"-->
+<!--          :disabled="multiple"-->
+<!--          @click="handleDelete"-->
+<!--          v-hasPermi="['disk:storage:remove']"-->
+<!--        >删除</el-button>-->
+<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -130,10 +130,24 @@
           <el-button
             size="mini"
             type="text"
+            icon="el-icon-view"
+            @click="handleViewFileList(scope.row)"
+            v-hasPermi="['disk:storage:getStorageFileListByUserId']"
+          >查看文件列表</el-button>
+<!--          <el-button-->
+<!--            size="mini"-->
+<!--            type="text"-->
+<!--            icon="el-icon-delete"-->
+<!--            @click="handleDelete(scope.row)"-->
+<!--            v-hasPermi="['disk:storage:remove']"-->
+<!--          >删除</el-button>-->
+          <el-button
+            size="mini"
+            type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['disk:storage:remove']"
-          >删除</el-button>
+            v-hasPermi="['disk:storage:formattedDisk']"
+          >格式化磁盘</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -331,6 +345,9 @@ export default {
     checkRole,
     skipFileList() {
       this.$router.push({ path: "/disk/file" });
+    },
+    handleViewFileList(row) {
+      this.$router.push({ path: "/disk/file/manageFile" , query: {userId: row.createId} });
     }
   }
 };

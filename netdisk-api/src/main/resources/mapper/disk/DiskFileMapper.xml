@@ -109,6 +109,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         GROUP BY type
     </select>
 
+    <select id="selectAllIdsByUserId" resultType="java.lang.Long">
+        select id from disk_file where create_id = #{userId}
+    </select>
+
     <insert id="insertDiskFile" parameterType="DiskFile" useGeneratedKeys="true" keyProperty="id">
         insert into disk_file
         <trim prefix="(" suffix=")" suffixOverrides=",">

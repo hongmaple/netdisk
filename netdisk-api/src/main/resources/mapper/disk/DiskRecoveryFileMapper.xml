@@ -116,4 +116,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <delete id="deleteDiskRecoveryFileByUserId">
+        delete from disk_recovery_file where create_id = #{userId}
+    </delete>
 </mapper>

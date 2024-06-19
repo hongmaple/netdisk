@@ -62,4 +62,6 @@ public interface IDiskRecoveryFileService
     List<DiskRecoveryFile> selectDiskRecoveryFileByIdsAndUserId(Long[] ids, Long userId);
 
     int refresh(Long[] ids,Long userId);
+
+    int deleteDiskRecoveryFileByUserId(Long userId);
 }

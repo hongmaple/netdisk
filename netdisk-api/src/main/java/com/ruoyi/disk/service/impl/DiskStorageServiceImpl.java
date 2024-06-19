@@ -115,4 +115,9 @@ public class DiskStorageServiceImpl implements IDiskStorageService
     public int updateUsedCapacity(Long id, long usedCapacity) {
         return diskStorageMapper.updateUsedCapacity(id,usedCapacity);
     }
+
+    @Override
+    public boolean updateUsedCapacityByUserId(Long userId, long usedCapacity) {
+        return diskStorageMapper.updateUsedCapacityByUserId(userId,usedCapacity)>0;
+    }
 }

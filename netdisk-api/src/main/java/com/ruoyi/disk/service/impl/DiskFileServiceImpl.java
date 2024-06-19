@@ -365,4 +365,9 @@ public class DiskFileServiceImpl implements IDiskFileService
         });
         return this.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
     }
+
+    @Override
+    public List<Long> selectAllIdsByUserId(Long userId) {
+        return diskFileMapper.selectAllIdsByUserId(userId);
+    }
 }

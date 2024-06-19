@@ -85,6 +85,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update disk_storage set used_capacity = #{usedCapacity} where id = #{id}
     </update>
 
+    <update id="updateUsedCapacityByUserId">
+        update disk_storage set used_capacity = #{usedCapacity} where create_id = #{userId}
+    </update>
+
     <delete id="deleteDiskStorageById" parameterType="Long">
         delete from disk_storage where id = #{id}
     </delete>

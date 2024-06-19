@@ -154,4 +154,9 @@ public class DiskRecoveryFileServiceImpl implements IDiskRecoveryFileService
                 .toArray(Long[]::new));
         return diskRecoveryFileMapper.deleteDiskRecoveryFileByIds(ids);
     }
+
+    @Override
+    public int deleteDiskRecoveryFileByUserId(Long userId) {
+        return diskRecoveryFileMapper.deleteDiskRecoveryFileByUserId(userId);
+    }
 }
