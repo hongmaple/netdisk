@@ -10,11 +10,11 @@
             </div>
             <div>
               总容量：
-              <span>{{ storageUnitConversion(item.totalCapacity, 'mb') }}  MB</span>
+              <span>{{ storageUnitConversion(item.totalCapacity) }}</span>
             </div>
             <div>
               已用容量：
-              <span>{{ storageUnitConversion(item.usedCapacity, 'mb') }}  MB</span>
+              <span>{{ storageUnitConversion(item.usedCapacity) }}</span>
             </div>
           </div>
 

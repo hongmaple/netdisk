@@ -16,3 +16,21 @@ export function storageUnitConversion(capacity,format) {
   }
   return (capacity/1024/1024/1024).toFixed(2)
 }
+
+// 存储单位换算
+/**
+ *
+ * @param capacity 存储容量 单位字节
+ * @returns {string} 带单位
+ */
+export function storageUnitConversion(capacity) {
+  capacity = (capacity/1024).toFixed(2);
+  if (capacity<1024) {
+    return capacity+"KB"
+  } else if ((capacity = (capacity/1024).toFixed(2))<1024) {
+    return capacity+"MB"
+  } else if ((capacity = (capacity/1024).toFixed(2))<1024) {
+    return capacity+"GB"
+  }
+  return (capacity/1024).toFixed(2) + "TB"
+}
