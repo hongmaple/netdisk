@@ -4,12 +4,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.disk.domain.DiskFile;
 import com.ruoyi.disk.service.IDiskFileService;
+import com.ruoyi.disk.service.IDiskRecoveryFileService;
 import com.ruoyi.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -45,6 +50,9 @@ public class DiskStorageController extends BaseController
 
     @Autowired
     private IDiskFileService diskFileService;
+
+    @Autowired
+    private IDiskRecoveryFileService recoveryFileService;
 
     /**
      * 查询用户存储列表
@@ -169,5 +177,57 @@ public class DiskStorageController extends BaseController
         result.put("typeCapacityStats", typeCapacityStatsList);
         result.put("fileTypeNumStats", fileTypeNumStatsList);
         return AjaxResult.success(result);
+    }
+
+    /**
+     * 查看用户存储的文件列表
+     */
+    @PreAuthorize("@ss.hasPermi('disk:storage:getStorageFileListByUserId')")
+    @Log(title = "查看用户存储的文件列表", businessType = BusinessType.OTHER)
+    @GetMapping("/getStorageFileListByUserId/{userId}")
+    public TableDataInfo getStorageFileListByUserId(DiskFile diskFile,@PathVariable("userId") Long userId) {
+        startPage();
+        diskFile.setCreateId(getUserId());
+        DiskStorage diskStorage = new DiskStorage();
+        diskStorage.setCreateId(getUserId());
+        diskStorageService.insertDiskStorage(diskStorage);
+        List<DiskFile> list = diskFileService.selectDiskFileList(diskFile);
+        List<DiskFile> allDiskFiles = diskFileService.selectAll();
+        list.forEach(f -> {
+            if (f.getIsDir()==1) {
+                List<DiskFile> allChildFiles = new ArrayList<>();
+                diskFileService.getChildPerms(allDiskFiles,allChildFiles,f.getId());
+                f.setSize(allChildFiles.stream().map(DiskFile::getSize)
+                        .reduce(0L,Long::sum));
+            }
+        });
+        return getDataTable(list);
+    }
+
+    /**
+     * 格式化磁盘
+     */
+    @PreAuthorize("@ss.hasPermi('disk:storage:formattedDisk')")
+    @Log(title = "格式化磁盘", businessType = BusinessType.CLEAN)
+    @DeleteMapping("/formattedDisk/{userId}")
+    @Transactional
+    public AjaxResult formatDisk(@PathVariable("userId") Long userId) {
+        LoginUser loginUser = getLoginUser();
+        SysUser currentUser = loginUser.getUser();
+        List<Long> fileIds;
+        if (StringUtils.isNotNull(currentUser) && !currentUser.isAdmin()) {
+            fileIds = diskFileService.selectAllIdsByUserId(getUserId());
+            recoveryFileService.deleteDiskRecoveryFileByUserId(getUserId());
+            diskStorageService.updateUsedCapacityByUserId(getUserId(),0L);
+        } else {
+            fileIds = diskFileService.selectAllIdsByUserId(userId);
+            recoveryFileService.deleteDiskRecoveryFileByUserId(userId);
+            diskStorageService.updateUsedCapacityByUserId(getUserId(),0L);
+        }
+        int num = 0;
+        if (CollectionUtil.isNotEmpty(fileIds)) {
+            num = diskFileService.deleteDiskFileByIdsAndRemoveFile(fileIds);
+        }
+        return AjaxResult.success(String.format("格式化磁盘成功,共删除文件：%s个",num));
     }
 }
