@@ -5,14 +5,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.IORuntimeException;
+import com.ruoyi.common.config.RuoYiConfig;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.MimeTypeUtils;
 import com.ruoyi.disk.domain.DiskStorage;
 import com.ruoyi.disk.service.IDiskSensitiveWordService;
 import com.ruoyi.disk.service.IDiskStorageService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.disk.mapper.DiskFileMapper;
@@ -27,8 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2024-04-11
  */
 @Service
+
 public class DiskFileServiceImpl implements IDiskFileService 
 {
+    private static final Logger log = LoggerFactory.getLogger(DiskRecoveryFileServiceImpl.class);
+
     @Autowired
     private DiskFileMapper diskFileMapper;
 
@@ -198,12 +208,11 @@ public class DiskFileServiceImpl implements IDiskFileService
                 return "文档";
             case 3:
                 return "音乐";
-            case 4:
-                return "其他";
             case 5:
                 return "文件夹";
+            default:
+                return "其他";
         }
-        return "其他";
     }
 
     /**
@@ -214,7 +223,8 @@ public class DiskFileServiceImpl implements IDiskFileService
      * @param parentId 传入的父节点ID
      * @return String
      */
-    public List<DiskFile> getChildPerms(List<DiskFile> list,List<DiskFile> allList, Long parentId)
+    @Override
+    public List<DiskFile> getChildPerms(List<DiskFile> list, List<DiskFile> allList, Long parentId)
     {
         List<DiskFile> returnList = new ArrayList<>();
         for (Iterator<DiskFile> iterator = list.iterator(); iterator.hasNext();)
@@ -335,5 +345,24 @@ public class DiskFileServiceImpl implements IDiskFileService
     public boolean hasChild(List<DiskFile> list, DiskFile t)
     {
         return getChildList(list, t).size() > 0;
+    }
+
+    @Override
+    public int deleteDiskFileByIdsAndRemoveFile(List<Long> delFileIds) {
+        List<DiskFile> allDelFiles = this.selectDiskFileListByIdsIgnoreDel(delFileIds.toArray(new Long[0]));
+        List<DiskFile> allDiskFiles = this.selectAllByUserId(SecurityUtils.getUserId());
+        delFileIds.forEach(parentId -> this.getChildPerms(allDiskFiles,allDelFiles,parentId));
+        allDelFiles.forEach(diskFile -> {
+            // 本地资源路径
+            String localPath = RuoYiConfig.getProfile();
+            // 数据库资源地址
+            String downloadPath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
+            try {
+                FileUtil.del(downloadPath);
+            } catch (IORuntimeException e) {
+                log.debug("文件删除失败 文件不存在 {0}",e);
+            }
+        });
+        return this.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
     }
 }
