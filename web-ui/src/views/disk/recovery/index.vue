@@ -109,7 +109,7 @@
               <div v-if="currentId===itme.id" class="Extra-Text">
                 <span>文件名：{{ itme.name }}</span><br/>
                 <span>
-                  文件大小：{{ storageUnitConversion(itme.size,"mb") }} MB &nbsp;&nbsp;
+                  文件大小：{{ storageUnitConversion(itme.size)}} &nbsp;&nbsp;
                   创建时间：{{ parseTime(itme.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}&nbsp;&nbsp;
                   更新时间：{{ parseTime(itme.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}
                 </span>

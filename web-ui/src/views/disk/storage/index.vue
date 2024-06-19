@@ -91,12 +91,12 @@
       <el-table-column label="基础目录" align="center" prop="baseDir" />
       <el-table-column label="总容量" align="center" prop="totalCapacity" >
         <template slot-scope="scope">
-          <span>{{ storageUnitConversion(scope.row.totalCapacity, 'mb') }} MB</span>
+          <span>{{ storageUnitConversion(scope.row.totalCapacity) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="已用容量" align="center" prop="usedCapacity" >
         <template slot-scope="scope">
-          <span>{{ storageUnitConversion(scope.row.usedCapacity, 'mb') }} MB</span>
+          <span>{{ storageUnitConversion(scope.row.usedCapacity) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户名" align="center" prop="sysUser.userName" />
@@ -158,11 +158,11 @@
       </div>
       <div>
         总容量：
-        <span>{{ storageUnitConversion(item.totalCapacity, 'mb') }}  MB</span>
+        <span>{{ storageUnitConversion(item.totalCapacity) }}</span>
       </div>
       <div>
         已用容量：
-        <span>{{ storageUnitConversion(item.usedCapacity, 'mb') }}  MB</span>
+        <span>{{ storageUnitConversion(item.usedCapacity) }}</span>
       </div>
     </div>
 
