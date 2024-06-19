@@ -344,7 +344,7 @@ import {getStorageFileListByUserId} from "@/api/disk/storage";
 import {addShare} from "@/api/disk/share";
 
 export default {
-  name: "File",
+  name: "manageFile",
   dicts: ['file_type'],
   data() {
     return {
@@ -478,11 +478,14 @@ export default {
         }]
       },
       baseUrl: process.env.VUE_APP_BASE_API,
-      currentIndex: -1
+      currentIndex: -1,
+      userId: 0
     }
   },
   created() {
     this.queryParams.parentId = 0;
+    this.userId = this.$route.query.userId;
+    console.log(this.$route.query.userId)
     this.getList();
     this.getConfigKey("font.baseUrl").then(response => {
       this.shareBaseUrl = response.msg + "/external/share/share-list?";
@@ -505,7 +508,7 @@ export default {
         this.queryParams.params["beginCreateTime"] = this.daterangeCreateTime[0];
         this.queryParams.params["endCreateTime"] = this.daterangeCreateTime[1];
       }
-      getStorageFileListByUserId(this.queryParams,$route.params.userId).then(response => {
+      getStorageFileListByUserId(this.queryParams,this.userId).then(response => {
         this.fileList = response.rows;
         this.total = response.total;
         this.loading = false;

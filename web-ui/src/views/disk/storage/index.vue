@@ -85,72 +85,82 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-if="checkRole(['admin'])" v-loading="loading" :data="storageList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-<!--      <el-table-column label="" align="center" prop="id" />-->
-      <el-table-column label="基础目录" align="center" prop="baseDir" />
-      <el-table-column label="总容量" align="center" prop="totalCapacity" >
-        <template slot-scope="scope">
-          <span>{{ storageUnitFormat(scope.row.totalCapacity) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="已用容量" align="center" prop="usedCapacity" >
-        <template slot-scope="scope">
-          <span>{{ storageUnitFormat(scope.row.usedCapacity) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="用户名" align="center" prop="sysUser.userName" />
-      <el-table-column label="用户昵称" align="center" prop="sysUser.nickName" />
-      <el-table-column label="用户头像" align="center" prop="sysUser.avatar" >
-        <template slot-scope="scope">
-          <image-preview :src="scope.row.sysUser.avatar" :width="100" :height="100"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="更新者" align="center" prop="updateId" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['disk:storage:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-view"
-            @click="handleViewFileList(scope.row)"
-            v-hasPermi="['disk:storage:getStorageFileListByUserId']"
-          >查看文件列表</el-button>
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-delete"-->
-<!--            @click="handleDelete(scope.row)"-->
-<!--            v-hasPermi="['disk:storage:remove']"-->
-<!--          >删除</el-button>-->
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['disk:storage:formattedDisk']"
-          >格式化磁盘</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div v-if="checkRole(['admin'])">
+      <el-table v-loading="loading" :data="storageList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <!--      <el-table-column label="" align="center" prop="id" />-->
+        <el-table-column label="基础目录" align="center" prop="baseDir" />
+        <el-table-column label="总容量" align="center" prop="totalCapacity" >
+          <template slot-scope="scope">
+            <span>{{ storageUnitFormat(scope.row.totalCapacity) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="已用容量" align="center" prop="usedCapacity" >
+          <template slot-scope="scope">
+            <span>{{ storageUnitFormat(scope.row.usedCapacity) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="用户名" align="center" prop="sysUser.userName" />
+        <el-table-column label="用户昵称" align="center" prop="sysUser.nickName" />
+        <el-table-column label="用户头像" align="center" prop="sysUser.avatar" >
+          <template slot-scope="scope">
+            <image-preview :src="scope.row.sysUser.avatar" :width="100" :height="100"/>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="更新者" align="center" prop="updateId" />
+        <el-table-column label="更新时间" align="center" prop="updateTime" width="180">
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.updateTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['disk:storage:edit']"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-view"
+              @click="handleViewFileList(scope.row)"
+              v-hasPermi="['disk:storage:getStorageFileListByUserId']"
+            >查看文件列表</el-button>
+            <!--          <el-button-->
+            <!--            size="mini"-->
+            <!--            type="text"-->
+            <!--            icon="el-icon-delete"-->
+            <!--            @click="handleDelete(scope.row)"-->
+            <!--            v-hasPermi="['disk:storage:remove']"-->
+            <!--          >删除</el-button>-->
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleFormattedDisk(scope.row)"
+              v-hasPermi="['disk:storage:formattedDisk']"
+            >格式化磁盘</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
+    </div>
 
     <div @click="skipFileList" style="border: 2px solid;border-image: linear-gradient(to right, #743ad5, #d53a9d) 1;width: 350px;height: 150px;text-align: center" v-if="!checkRole(['admin'])" v-for="item in storageList">
       <div style="margin-top: 10px">
@@ -164,15 +174,14 @@
         已用容量：
         <span>{{ storageUnitFormat(item.usedCapacity) }}</span>
       </div>
+      <el-button
+        size="mini"
+        type="text"
+        icon="el-icon-delete"
+        @click="handleFormattedDisk(item)"
+        v-hasPermi="['disk:storage:formattedDisk']"
+      >格式化磁盘</el-button>
     </div>
-
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
 
     <!-- 添加或修改用户存储对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
@@ -199,7 +208,7 @@
 </template>
 
 <script>
-import { listStorage, getStorage, delStorage, addStorage, updateStorage } from "@/api/disk/storage";
+import { listStorage, getStorage, delStorage, addStorage, updateStorage,formattedDisk } from "@/api/disk/storage";
 import { checkRole } from "@/utils/permission"; // 权限判断函数
 
 export default {
@@ -336,6 +345,14 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
+    handleFormattedDisk(row) {
+      this.$modal.confirm('是否确认格式化"' + row.sysUser.userName + '"的磁盘数据？').then(function() {
+        return formattedDisk(row.createId);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("格式化成功");
+      }).catch(() => {});
+    },
     /** 导出按钮操作 */
     handleExport() {
       this.download('disk/storage/export', {
@@ -347,7 +364,7 @@ export default {
       this.$router.push({ path: "/disk/file" });
     },
     handleViewFileList(row) {
-      this.$router.push({ path: "/disk/file/manageFile" , query: {userId: row.createId} });
+      this.$router.push({ path: "/disk/manageFile" , query: {userId: row.createId} });
     }
   }
 };
