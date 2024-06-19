@@ -1,9 +1,9 @@
 # 项目相关配置
 ruoyi:
   # 名称
-  name: disk
+  name: netdisk
   # 版本
-  version: 3.8.5
+  version: 3.8.7
   # 版权年份
   copyrightYear: 2024
   # 实例演示开关
@@ -70,13 +70,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 8.134.131.184
+    host: 127.0.0.1
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password: 
+    password:
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -138,3 +138,9 @@ hadoop:
 hdfs:
   hdfs-site: hdfs://hadoop101:9000
   core-site:
+# ftp配置
+ftp:
+  server: ftp.example.com
+  port: 21
+  user: ftpusername
+  password: ftppassword
