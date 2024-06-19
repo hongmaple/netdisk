@@ -83,4 +83,6 @@ public interface DiskFileMapper
     List<Map<String, Object>> typeCapacityStats(Long userId);
 
     List<Map<String, Object>> fileTypeNumStats(Long userId);
+
+    List<Long> selectAllIdsByUserId(Long userId);
 }

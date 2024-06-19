@@ -62,4 +62,6 @@ public interface IDiskStorageService
     DiskStorage selectDiskStorageByUserId(Long userId);
 
     int updateUsedCapacity(Long id, long usedCapacity);
+
+    boolean updateUsedCapacityByUserId(Long userId, long l);
 }

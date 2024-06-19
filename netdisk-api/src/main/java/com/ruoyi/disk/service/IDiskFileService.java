@@ -96,4 +96,11 @@ public interface IDiskFileService
      * @return
      */
     int deleteDiskFileByIdsAndRemoveFile(List<Long> delFileIds);
+
+    /**
+     * 获取用户的所有文件id
+     * @param userId
+     * @return
+     */
+    List<Long> selectAllIdsByUserId(Long userId);
 }

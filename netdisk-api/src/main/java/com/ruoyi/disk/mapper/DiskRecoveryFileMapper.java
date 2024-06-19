@@ -63,4 +63,6 @@ public interface DiskRecoveryFileMapper
     List<DiskRecoveryFile> selectDiskRecoveryFileByIdsAndUserId(@Param("ids") Long[] ids, @Param("userId") Long userId);
 
     int selectCountByIdsAndUserId(@Param("ids") Long[] ids, @Param("userId") Long userId);
+
+    int deleteDiskRecoveryFileByUserId(Long userId);
 }

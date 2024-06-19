@@ -63,4 +63,6 @@ public interface DiskStorageMapper
     DiskStorage selectDiskStorageByUserId(Long createId);
 
     int updateUsedCapacity(@Param("id") Long id,@Param("usedCapacity") long usedCapacity);
+
+    int updateUsedCapacityByUserId(@Param("userId") Long userId, @Param("usedCapacity") long usedCapacity);
 }
