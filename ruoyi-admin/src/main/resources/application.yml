@@ -130,3 +130,9 @@ xss:
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*,/disk/*
 
+# ftp配置
+ftp:
+  server: ftp.example.com
+  port: 21
+  user: ftpusername
+  password: ftppassword
