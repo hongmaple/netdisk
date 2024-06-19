@@ -38,7 +38,7 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 // 网盘工具
-import { storageUnitConversion } from "@/utils/disk";
+import { storageUnitFormat } from "@/utils/disk";
 import VueCoreVideoPlayer from 'vue-core-video-player'
 
 // 全局方法挂载
@@ -51,7 +51,7 @@ Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
-Vue.prototype.storageUnitConversion = storageUnitConversion
+Vue.prototype.storageUnitConversion = storageUnitFormat
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
