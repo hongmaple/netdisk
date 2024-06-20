@@ -15,6 +15,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.MimeTypeUtils;
+import com.ruoyi.disk.HadoopTemplate;
 import com.ruoyi.disk.domain.DiskStorage;
 import com.ruoyi.disk.service.IDiskSensitiveWordService;
 import com.ruoyi.disk.service.IDiskStorageService;
@@ -47,6 +48,9 @@ public class DiskFileServiceImpl implements IDiskFileService
 
     @Autowired
     private IDiskSensitiveWordService diskSensitiveWordService;
+
+    @Autowired
+    private HadoopTemplate hadoopTemplate;
 
     /**
      * 查询文件
@@ -352,13 +356,10 @@ public class DiskFileServiceImpl implements IDiskFileService
         List<DiskFile> allDelFiles = this.selectDiskFileListByIdsIgnoreDel(delFileIds.toArray(new Long[0]));
         List<DiskFile> allDiskFiles = this.selectAllByUserId(SecurityUtils.getUserId());
         delFileIds.forEach(parentId -> this.getChildPerms(allDiskFiles,allDelFiles,parentId));
+        this.deleteDiskFileByIds(allDelFiles.stream().map(DiskFile::getId).toArray(Long[]::new));
         allDelFiles.forEach(diskFile -> {
-            // 本地资源路径
-            String localPath = RuoYiConfig.getProfile();
-            // 数据库资源地址
-            String downloadPath = localPath + StringUtils.substringAfter(diskFile.getUrl(), Constants.RESOURCE_PREFIX);
             try {
-                FileUtil.del(downloadPath);
+                hadoopTemplate.rmdir(StringUtils.substringAfter(diskFile.getUrl(), Constants.HADOOP_PREFIX).replace("--","/"),null);
             } catch (IORuntimeException e) {
                 log.debug("文件删除失败 文件不存在 {0}",e);
             }
