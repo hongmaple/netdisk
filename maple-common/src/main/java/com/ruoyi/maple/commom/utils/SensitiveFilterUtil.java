@@ -1,9 +1,10 @@
-package com.ruoyi.maple.commom.utils; /**
+package com.ruoyi.maple.commom.utils;
+
+/**
  * 敏感词过滤工具类
  *
- * @author yunshang
+ * @author maple
  */
- 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
  
 /**
- * @author yanan.wang
+ * @author maple
  * @describe
- * @createTime 2019-12-19 15:13
+ * @createTime 2024-05-01
  */
 @Configuration
 public class HadoopConfig {

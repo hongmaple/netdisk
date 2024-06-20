@@ -1,9 +1,6 @@
 package com.ruoyi.disk.controller;
 
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.disk.HadoopConfig;
 import com.ruoyi.disk.HadoopTemplate;
-import org.apache.commons.io.input.BufferedFileChannelInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
