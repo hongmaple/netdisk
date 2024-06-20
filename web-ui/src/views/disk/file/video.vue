@@ -100,10 +100,11 @@
         <div style="margin-left: 20px" v-for="(itme,index) in fileList">
           <div style="float: left;width: 200px;height: 200px;margin-left: 25px;margin-right: 25px;margin-top: 20px;position: relative;" v-if="itme.isDir===0&&itme.type===1">
             <el-checkbox-button @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-              <div v-on:mouseover="mouseEnter(index)" @mouseleave="mouseLeave(index)"  class="grid-content bg-purple">
-                <vue-core-video-player :title="itme.name" :src="baseUrl+itme.url"/>
-                <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin-top: 20px'>
-                  {{itme.name}}</div>
+              <div @dblclick="handlePreview(itme)" class="grid-content bg-purple">
+                <img style="width: 100px;height: 100px" src="@/assets/images/video.png"/>
+                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)"  style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>
+                  {{ itme.name }}
+                </div>
               </div>
             </el-checkbox-button>
             <div v-if="currentIndex===index" class="Extra-Text">
@@ -464,6 +465,12 @@ export default {
     mouseLeave(index) {
       this.currentIndex = -1;
     },
+    handlePreview(row) {
+      if (row.type===1) {
+        //视频
+        this.$router.push({ name: "preview_video" , params: {url: row.url,name:row.name} });
+      }
+    }
   }
 };
 </script>
