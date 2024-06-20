@@ -101,6 +101,20 @@ export const constantRoutes = [
         meta: { title: '分享' }
       }
     ]
+  },
+  {
+    path: '/disk/preview',
+    component: Layout,
+    hidden: true,
+    redirect: 'noredirect',
+    children: [
+      {
+        path: 'preview_video',
+        component: () => import('@/views/disk/preview/video'),
+        name: 'preview_video',
+        meta: { title: '视频播放器' }
+      }
+    ]
   }
 ]
 

@@ -54,52 +54,60 @@
         <right-toolbar @queryTable="refresh"></right-toolbar>
       </el-row>
 
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item>
+          <el-link :underline="false" @click="skipCrumbs(0)">根目录</el-link>
+        </el-breadcrumb-item>
+
+        <el-breadcrumb-item v-for="(item,index) in crumbsList":key="index">
+          <el-link :underline="false" @click="skipCrumbs(item.id)">{{item.name}}</el-link>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+
       <el-main v-loading="loading">
         <el-checkbox-group v-model="checkboxIds">
           <div  style="width: 100%;height: 100%;margin-left: 20px" v-for="(itme,index) in fileList">
             <div style="float: left;width: 120px;height: 130px;margin-left: 25px;margin-right: 25px;margin-top: 20px;position: relative;">
               <el-checkbox-button v-if="itme.isDir===1" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" @dblclick="checkboxOndblclick(itme)" class="grid-content bg-purple">
+                <div @dblclick="checkboxOndblclick(itme)" class="grid-content bg-purple">
                   <img style="width: 100px;height: 100px" src="@/assets/images/dir.png"/>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
               <el-checkbox-button v-if="itme.isDir===0&&itme.type===0" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" class="grid-content bg-purple">
+                <div class="grid-content bg-purple">
                   <image-preview :src="itme.url" :width="100" :height="100"/>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
               <el-checkbox-button v-if="itme.isDir===0&&itme.type===1" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" class="grid-content bg-purple">
-                  <div style="width: 100px;height: 83px;">
-                    <vue-core-video-player preload="none" :title="itme.name" :src="baseUrl+itme.url"/>
-                  </div>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin-top: 20px'>
+                <div @dblclick="handlePreview(itme)" class="grid-content bg-purple">
+                  <img style="width: 100px;height: 100px" src="@/assets/images/video.png"/>
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)"  style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>
                     {{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
               <el-checkbox-button v-if="itme.isDir===0&&itme.type===2" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" class="grid-content bg-purple">
+                <div class="grid-content bg-purple">
                   <img style="width: 100px;height: 100px" src="@/assets/images/file_open.png"/>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)"  style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
               <el-checkbox-button v-if="itme.isDir===0&&itme.type===3" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" class="grid-content bg-purple">
+                <div class="grid-content bg-purple">
                   <img style="width: 100px;height: 100px" src="@/assets/images/file_music.png"/>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
               <el-checkbox-button  v-if="itme.isDir===0&&itme.type===4" @change="handleCheckboxChange" :label="itme.id" :key="itme.id" size="medium">
-                <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" class="grid-content bg-purple ">
+                <div  class="grid-content bg-purple ">
                   <img style="width: 100px;height: 100px" src="@/assets/images/file_open.png"/>
-                  <div style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
+                  <div v-on:mouseover="mouseEnter(itme.id)" @mouseleave="mouseLeave(itme.id)" style='width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;'>{{ itme.name }}
                   </div>
                 </div>
               </el-checkbox-button>
@@ -116,6 +124,11 @@
         </el-checkbox-group>
       </el-main>
     </div>
+
+    <div style="text-align: center;width: 100%" v-show="total===0">
+      该文件夹为空
+    </div>
+
     <div class="border-effect share-info-check" v-if="!queryFileOk&&shareInfo.type==='0'">
       <el-row style="width: 100%;border-bottom: 2px solid #007bff;">
         <div style="width: 80px;height: 100px;float: left">
@@ -184,6 +197,9 @@ export default {
       parentId: null,
       uuid: '',
       secretKey: '',
+      allCrumbsList: [],
+      crumbsList: [
+      ],
       skipList: [],
       skipIndex: -1,
       baseUrl: process.env.VUE_APP_BASE_API,
@@ -244,11 +260,21 @@ export default {
       this.multiple = !this.checkboxIds.length
     },
     checkboxOndblclick(disk) {
-      if (disk.isDir === 1) {
-        this.parentId = disk.id;
-        this.skipList.push(disk.id)
-        this.skipList = [...new Set(this.skipList)].sort();
-        this.skipIndex = this.skipList.indexOf(this.parentId);
+      console.log(disk);
+      if (disk.isDir===1) {
+        this.queryParams.parentId = disk.id;
+        const skip = {
+          id: disk.id,
+          parentId: disk.parentId,
+          name: disk.name
+        }
+        this.allCrumbsList.push(skip);
+        this.allCrumbsList = this.uniqueObjects(this.allCrumbsList);
+        this.crumbsList=[];
+        this.generateCrumbs(disk.id);
+        this.skipList.push(disk.id);
+        this.skipList = [...new Set(this.skipList)];
+        this.uploadFileUrl = process.env.VUE_APP_BASE_API + "/disk/file/upload/"+disk.id
         this.getList();
       }
     },
@@ -262,13 +288,18 @@ export default {
       }
     },
     skip(nextIndex) {
-      this.skipIndex = nextIndex;
-      if (nextIndex < 0) {
-        this.getShareFileList();
-      } else if (nextIndex >= this.skipList.length) {
-        this.getShareFileList();
+      this.crumbsList=[];
+      if (nextIndex<0) {
+        this.queryParams.parentId=0;
+        this.allCrumbsList=[];
+        this.getList();
+      }else if (nextIndex>=this.skipList.length) {
+        this.queryParams.parentId =0;
+        this.allCrumbsList=[];
+        this.getList();
       } else {
-        this.parentId = this.skipList[nextIndex];
+        this.queryParams.parentId = this.skipList[nextIndex];
+        this.generateCrumbs(this.queryParams.parentId);
         this.getList();
       }
     },
@@ -291,6 +322,46 @@ export default {
     mouseLeave(id) {
       this.currentId = -1;
     },
+    uniqueObjects(arr) {
+      const unique = [];
+      const seen = new Set();
+      arr.forEach(item => {
+        const stringifiedItem = JSON.stringify(item);
+        if (!seen.has(stringifiedItem)) {
+          unique.push(item);
+          seen.add(stringifiedItem);
+        }
+      });
+      return unique;
+    },
+    generateCrumbs(id) {
+      if (id===0) {
+        this.crumbsList = this.crumbsList.reverse();
+        return;
+      }
+      const crumbs = this.getCrumbsListById(id);
+      if (crumbs!=null&&crumbs!=undefined) {
+        this.crumbsList.push(crumbs);
+        this.generateCrumbs(crumbs.parentId);
+      }
+    },
+    getCrumbsListById(id) {
+      return this.allCrumbsList.find(item => {
+        return item.id === id;
+      });
+    },
+    skipCrumbs(id) {
+      this.queryParams.parentId = id;
+      this.crumbsList = [];
+      this.generateCrumbs(this.queryParams.parentId);
+      this.getList();
+    },
+    handlePreview(row) {
+      if (row.type===1) {
+        //视频
+        this.$router.push({ name: "preview_video" , params: {url: row.url,name:row.name} });
+      }
+    }
   }
 };
 </script>
@@ -320,17 +391,17 @@ export default {
 }
 
 .Extra-Text {
-  width: 500px;
-  height: 60px;
+  width: 300px;
+  height: 80px;
   border: 2px solid #dfe6ec;
   font-size: 12px;
-  position: absolute;
-  top: -5px;
+  position: relative;
+  top: -150px;
   left: 1px;
   background-color: #bfcbd9;
   text-align: center;
   color: #ffffff;
   z-index: 9999;
-  border-radius: 50px;
+  border-radius: 20px;
 }
 </style>
