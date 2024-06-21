@@ -4,7 +4,7 @@
       <el-col :span="24" class="card-box">
         <el-card>
 
-          <div @click="skipFileList" style="border: 2px solid;border-image: linear-gradient(to right, #743ad5, #d53a9d) 1;width: 350px;height: 150px;text-align: center" v-for="item in storageList">
+          <div @dblclick="skipFileList" style="border: 2px solid;border-image: linear-gradient(to right, #743ad5, #d53a9d) 1;width: 350px;height: 150px;text-align: center" v-for="item in storageList">
             <div style="margin-top: 10px">
               <img style="width: 50px;height: 50px" src="@/assets/images/disk.png"/>
             </div>
@@ -16,6 +16,13 @@
               已用容量：
               <span>{{ storageUnitFormat(item.usedCapacity) }}</span>
             </div>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleFormattedDisk(item)"
+              v-hasPermi="['disk:storage:formattedDisk']"
+            >格式化磁盘</el-button>
           </div>
 
         </el-card>
@@ -45,14 +52,12 @@
 
 <script>
 import * as echarts from "echarts";
-import { myListStorage,getFileStorageStats } from "@/api/disk/storage";
+import {myListStorage, getFileStorageStats, formattedDisk} from "@/api/disk/storage";
 
 export default {
   name: "Index",
   data() {
     return {
-      // 版本号
-      version: "3.8.7",
       // 用户存储表格数据
       storageList: [],
       typeCapacityStats: null,
@@ -130,6 +135,14 @@ export default {
 
 
       });
+    },
+    handleFormattedDisk(row) {
+      this.$modal.confirm('是否确认格式化"' + row.sysUser.userName + '"的磁盘数据？').then(function() {
+        return formattedDisk(row.createId);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("格式化成功");
+      }).catch(() => {});
     },
   }
 };

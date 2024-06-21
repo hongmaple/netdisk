@@ -162,7 +162,7 @@
       />
     </div>
 
-    <div @click="skipFileList" style="border: 2px solid;border-image: linear-gradient(to right, #743ad5, #d53a9d) 1;width: 350px;height: 150px;text-align: center" v-if="!checkRole(['admin'])" v-for="item in storageList">
+    <div @dblclick="skipFileList" style="border: 2px solid;border-image: linear-gradient(to right, #743ad5, #d53a9d) 1;width: 350px;height: 150px;text-align: center" v-if="!checkRole(['admin'])" v-for="item in storageList">
       <div style="margin-top: 10px">
         <img style="width: 50px;height: 50px" src="@/assets/images/disk.png"/>
       </div>

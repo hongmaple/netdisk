@@ -20,8 +20,8 @@ export default {
   },
   created() {
     const { url,name } = this.$route.params
-    this.url = name;
-    this.name = url;
+    this.url = url;
+    this.name = name;
   },
   methods: {
 
