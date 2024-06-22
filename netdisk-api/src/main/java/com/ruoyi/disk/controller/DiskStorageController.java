@@ -84,15 +84,16 @@ public class DiskStorageController extends BaseController
     {
         startPage();
         if (!getLoginUser().getUser().isAdmin()) diskStorage.setCreateId(getUserId());
-        DiskStorage initDiskStorage = new DiskStorage();
-        initDiskStorage.setCreateId(getUserId());
-        diskStorageService.insertDiskStorage(initDiskStorage);
         List<DiskStorage> list = diskStorageService.selectDiskStorageList(diskStorage);
+        list = list.stream().filter(s -> !s.getCreateId().equals(getUserId())).collect(Collectors.toList());
         List<Long> userIds = list.stream().map(DiskStorage::getCreateId).collect(Collectors.toList());
         List<SysUser> sysUsers = iSysUserService.selectUserByIds(userIds);
         list.forEach(storage -> sysUsers.stream().filter(sysUser -> sysUser.getUserId().equals(storage.getCreateId())).findFirst().ifPresent(
                 storage::setSysUser
         ));
+        DiskStorage initDiskStorage = new DiskStorage();
+        initDiskStorage.setCreateId(getUserId());
+        diskStorageService.insertDiskStorage(initDiskStorage);
         return getDataTable(list);
     }
 
@@ -187,10 +188,12 @@ public class DiskStorageController extends BaseController
     @GetMapping("/getStorageFileListByUserId/{userId}")
     public TableDataInfo getStorageFileListByUserId(DiskFile diskFile,@PathVariable("userId") Long userId) {
         startPage();
-        diskFile.setCreateId(getUserId());
-        DiskStorage diskStorage = new DiskStorage();
-        diskStorage.setCreateId(getUserId());
-        diskStorageService.insertDiskStorage(diskStorage);
+        SysUser currentUser = getLoginUser().getUser();
+        if (StringUtils.isNotNull(currentUser) && currentUser.isAdmin()) {
+            diskFile.setCreateId(userId);
+        }else {
+            diskFile.setCreateId(getUserId());
+        }
         List<DiskFile> list = diskFileService.selectDiskFileList(diskFile);
         List<DiskFile> allDiskFiles = diskFileService.selectAll();
         list.forEach(f -> {
@@ -222,7 +225,7 @@ public class DiskStorageController extends BaseController
         } else {
             fileIds = diskFileService.selectAllIdsByUserId(userId);
             recoveryFileService.deleteDiskRecoveryFileByUserId(userId);
-            diskStorageService.updateUsedCapacityByUserId(getUserId(),0L);
+            diskStorageService.updateUsedCapacityByUserId(userId,0L);
         }
         int num = 0;
         if (CollectionUtil.isNotEmpty(fileIds)) {
