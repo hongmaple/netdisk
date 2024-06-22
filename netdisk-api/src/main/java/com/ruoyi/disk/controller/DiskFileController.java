@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -133,12 +134,13 @@ public class DiskFileController extends BaseController
     public AjaxResult add(@RequestBody DiskFile diskFile)
     {
         diskFile.setCreateId(getUserId());
+        // 获取当前用户本人的存储目录
+        DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
+        if (Objects.isNull(diskStorage)) throw new ServiceException("空间未初始化");
         if (diskFile.getIsDir()==1) {
             //是文件夹，设置url
             // 上传文件路径
             String url = Constants.RESOURCE_PREFIX;
-            // 获取当前用户本人的存储目录
-            DiskStorage diskStorage = diskStorageService.selectDiskStorageByUserId(SecurityUtils.getUserId());
             String[] localPaths = RuoYiConfig.getUploadPath().split("/");
             if (diskFile.getParentId()==0) {
                 if (Objects.nonNull(diskStorage)) url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()+"/"+diskFile.getName();
@@ -207,6 +209,7 @@ public class DiskFileController extends BaseController
      * 通用上传请求（单个）
      */
     @PostMapping("/upload/{parentId}")
+    @Transactional
     public AjaxResult uploadFile(MultipartFile file,@PathVariable Long parentId) throws Exception
     {
         try
@@ -241,7 +244,8 @@ public class DiskFileController extends BaseController
             diskFile.setParentId(parentId);
             diskFile.setUrl(fileName);
             diskFile.setSize(file.getSize());
-            diskFile.setType(diskFileService.getType(FileUploadUtils.getExtension(file)));
+            String extension = FileUploadUtils.getExtension(file);
+            diskFile.setType(diskFileService.getType(extension));
             diskFileService.save(diskFile,diskStorage);
             AjaxResult ajax = AjaxResult.success();
             ajax.put("url", url);
@@ -249,7 +253,7 @@ public class DiskFileController extends BaseController
             ajax.put("newFileName", FileUtils.getName(fileName));
             ajax.put("originalFilename", file.getOriginalFilename());
             ajax.put("size", file.getSize());
-            ajax.put("type", FileUploadUtils.getExtension(file));
+            ajax.put("type", extension);
             return ajax;
         }
         catch (Exception e)
@@ -281,7 +285,7 @@ public class DiskFileController extends BaseController
      * 本地资源通用下载
      */
     @GetMapping("/download/zip")
-    public void resourceDownload(DownloadBo downloadBo, HttpServletRequest request, HttpServletResponse response) {
+    public void hadoopDownload(DownloadBo downloadBo, HttpServletResponse response) {
         List<DiskFile> diskFiles;
         String dest = RuoYiConfig.getProfile()+"/";
         if (StringUtils.isNotEmpty(downloadBo.getUuid())&&StringUtils.isNotEmpty(downloadBo.getSecretKey())) {
@@ -295,7 +299,7 @@ public class DiskFileController extends BaseController
                     .map(String::trim)
                     .map(Long::valueOf)
                     .toArray(Long[]::new),getUserId());
-            dest = dest + RandomUtil.randomString(12);
+            dest = dest + RandomUtil.randomString(6);
         }
         FileUtil.mkdir(dest);
         List<String> downloadPaths = new ArrayList<>();
