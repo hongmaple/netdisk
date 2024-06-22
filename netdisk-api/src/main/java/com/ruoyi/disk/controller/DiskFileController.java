@@ -316,9 +316,11 @@ public class DiskFileController extends BaseController
 
         try {
             ByteArrayOutputStream out = null;
+            ZipOutputStream zos = null;
+            byte[] data = new byte[0];
             try {
                     out = new ByteArrayOutputStream();
-                    ZipOutputStream zos = new ZipOutputStream(out);
+                    zos = new ZipOutputStream(out);
                 for (int i = 0; i < diskFiles.size(); i++) {
                     String path = StringUtils.substringAfter(diskFiles.get(i).getUrl(),Constants.HADOOP_PREFIX);
                     // 本地资源路径
@@ -326,13 +328,18 @@ public class DiskFileController extends BaseController
                     //从远程下载文件到本地
                     hadoopTemplate.down(path,zos,out);
                 }
-                zos.close();
+                // 调用zip方法进行压缩
+                data = out.toByteArray();
             } catch (Exception e) {
                 log.debug("diskfile 从远程下载文件到本地报错: "+e);
+            } finally {
+                if (Objects.nonNull(zos)) {
+                    zos.close();
+                }
+                if (Objects.nonNull(out)) {
+                    out.close();
+                }
             }
-            // 调用zip方法进行压缩
-            byte[] data = out.toByteArray();
-            out.close();
             response.reset();
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
