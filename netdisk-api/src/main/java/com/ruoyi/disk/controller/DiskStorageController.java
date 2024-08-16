@@ -61,7 +61,7 @@ public class DiskStorageController extends BaseController
     @GetMapping("/myList")
     public TableDataInfo myList(DiskStorage diskStorage)
     {
-        startPage();
+        startPage("id desc");
         diskStorage.setCreateId(getUserId());
         DiskStorage initDiskStorage = new DiskStorage();
         initDiskStorage.setCreateId(getUserId());
@@ -82,7 +82,7 @@ public class DiskStorageController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskStorage diskStorage)
     {
-        startPage();
+        startPage("id desc");
         if (!getLoginUser().getUser().isAdmin()) diskStorage.setCreateId(getUserId());
         List<DiskStorage> list = diskStorageService.selectDiskStorageList(diskStorage);
         list = list.stream().filter(s -> !s.getCreateId().equals(getUserId())).collect(Collectors.toList());
@@ -187,7 +187,7 @@ public class DiskStorageController extends BaseController
     @Log(title = "查看用户存储的文件列表", businessType = BusinessType.OTHER)
     @GetMapping("/getStorageFileListByUserId/{userId}")
     public TableDataInfo getStorageFileListByUserId(DiskFile diskFile,@PathVariable("userId") Long userId) {
-        startPage();
+        startPage("id desc");
         SysUser currentUser = getLoginUser().getUser();
         if (StringUtils.isNotNull(currentUser) && currentUser.isAdmin()) {
             diskFile.setCreateId(userId);
@@ -231,6 +231,6 @@ public class DiskStorageController extends BaseController
         if (CollectionUtil.isNotEmpty(fileIds)) {
             num = diskFileService.deleteDiskFileByIdsAndRemoveFile(fileIds);
         }
-        return AjaxResult.success(String.format("格式化磁盘成功,共删除文件：%s个",num));
+        return AjaxResult.success(String.format("格式化磁盘成功,共删除文件/目录：%s个",num));
     }
 }

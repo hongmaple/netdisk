@@ -84,7 +84,7 @@ public class DiskFileController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskFile diskFile)
     {
-        startPage();
+        startPage("id desc");
         diskFile.setCreateId(getUserId());
         DiskStorage diskStorage = new DiskStorage();
         diskStorage.setCreateId(getUserId());

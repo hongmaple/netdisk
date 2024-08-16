@@ -40,6 +40,9 @@ import DictData from '@/components/DictData'
 // 网盘工具
 import { storageUnitFormat } from "@/utils/disk";
 import VueCoreVideoPlayer from 'vue-core-video-player'
+// 文件分片、断点续传组件
+import uploader from 'vue-simple-uploader'
+import $ from 'jquery'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -66,6 +69,7 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 Vue.use(VueCoreVideoPlayer)
+Vue.use(uploader)
 DictData.install()
 
 /**
