@@ -82,18 +82,20 @@ public class DiskStorageController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskStorage diskStorage)
     {
-        startPage("id desc");
         if (!getLoginUser().getUser().isAdmin()) diskStorage.setCreateId(getUserId());
+        DiskStorage initDiskStorage = new DiskStorage();
+        initDiskStorage.setCreateId(getUserId());
+        diskStorageService.insertDiskStorage(initDiskStorage);
+        startPage("id desc");
         List<DiskStorage> list = diskStorageService.selectDiskStorageList(diskStorage);
-        list = list.stream().filter(s -> !s.getCreateId().equals(getUserId())).collect(Collectors.toList());
         List<Long> userIds = list.stream().map(DiskStorage::getCreateId).collect(Collectors.toList());
+        if (CollectionUtil.isEmpty(userIds)) {
+            return getDataTable(new ArrayList<>());
+        }
         List<SysUser> sysUsers = iSysUserService.selectUserByIds(userIds);
         list.forEach(storage -> sysUsers.stream().filter(sysUser -> sysUser.getUserId().equals(storage.getCreateId())).findFirst().ifPresent(
                 storage::setSysUser
         ));
-        DiskStorage initDiskStorage = new DiskStorage();
-        initDiskStorage.setCreateId(getUserId());
-        diskStorageService.insertDiskStorage(initDiskStorage);
         return getDataTable(list);
     }
 
