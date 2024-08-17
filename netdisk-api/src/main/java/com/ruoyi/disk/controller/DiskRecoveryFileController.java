@@ -42,7 +42,7 @@ public class DiskRecoveryFileController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskRecoveryFile diskRecoveryFile)
     {
-        startPage();
+        startPage("id desc");
         diskRecoveryFile.setCreateId(getUserId());
         List<DiskRecoveryFile> list = diskRecoveryFileService.selectDiskRecoveryFileList(diskRecoveryFile);
         return getDataTable(list);

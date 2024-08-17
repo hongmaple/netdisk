@@ -8,7 +8,7 @@ spring:
             master:
                 url: jdbc:mysql://127.0.0.1:3306/netdisk?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
                 username: root
-                password: root
+                password: maple168
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
