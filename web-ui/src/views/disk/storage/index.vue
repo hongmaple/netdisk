@@ -17,22 +17,22 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建者" prop="createId">
+      <el-form-item label="用户id" prop="createId">
         <el-input
           v-model="queryParams.createId"
-          placeholder="请输入创建者"
+          placeholder="请输入用户id"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="更新者" prop="updateId">
-        <el-input
-          v-model="queryParams.updateId"
-          placeholder="请输入更新者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+<!--      <el-form-item label="更新者" prop="updateId">-->
+<!--        <el-input-->
+<!--          v-model="queryParams.updateId"-->
+<!--          placeholder="请输入更新者"-->
+<!--          clearable-->
+<!--          @keyup.enter.native="handleQuery"-->
+<!--        />-->
+<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>

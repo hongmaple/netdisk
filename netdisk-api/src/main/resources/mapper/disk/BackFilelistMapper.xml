@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.BackFilelistMapper">
+
+    <resultMap type="com.ruoyi.disk.domain.BackFilelist" id="BackFilelistResult">
+        <result property="id"    column="id"    />
+        <result property="filename"    column="filename"    />
+        <result property="identifier"    column="identifier"    />
+        <result property="url"    column="url"    />
+        <result property="location"    column="location"    />
+        <result property="totalSize"    column="total_size"    />
+    </resultMap>
+
+    <sql id="selectBackFilelistVo">
+        select id, filename, identifier, url, location, total_size from sys_filelist
+    </sql>
+
+    <select id="selectBackFilelistList" parameterType="com.ruoyi.disk.domain.BackFilelist" resultMap="BackFilelistResult">
+        <include refid="selectBackFilelistVo"/>
+        <where>
+            <if test="filename != null  and filename != ''"> and filename = #{filename}</if>
+            <if test="identifier != null  and identifier != ''"> and identifier = #{identifier}</if>
+            <if test="url != null  and url != ''"> and url = #{url}</if>
+            <if test="location != null  and location != ''"> and location = #{location}</if>
+            <if test="totalSize != null "> and total_size = #{totalSize}</if>
+        </where>
+    </select>
+
+    <select id="selectBackFilelistById" parameterType="Long" resultMap="BackFilelistResult">
+        <include refid="selectBackFilelistVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSingleBackFilelist" parameterType="com.ruoyi.disk.domain.BackFilelist" resultType="int">
+        select count(1) from sys_filelist
+        <where>
+            <if test="filename != null  and filename != ''"> and filename = #{filename}</if>
+            <if test="identifier != null  and identifier != ''"> and identifier = #{identifier}</if>
+        </where>
+    </select>
+
+    <insert id="insertBackFilelist" parameterType="com.ruoyi.disk.domain.BackFilelist" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_filelist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="filename != null  and filename != ''">filename,</if>
+            <if test="identifier != null  and identifier != ''">identifier,</if>
+            <if test="url != null  and url != ''">url,</if>
+            <if test="location != null  and location != ''">location,</if>
+            <if test="totalSize != null ">total_size,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="filename != null  and filename != ''">#{filename},</if>
+            <if test="identifier != null  and identifier != ''">#{identifier},</if>
+            <if test="url != null  and url != ''">#{url},</if>
+            <if test="location != null  and location != ''">#{location},</if>
+            <if test="totalSize != null ">#{totalSize},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBackFilelist" parameterType="com.ruoyi.disk.domain.BackFilelist">
+        update sys_filelist
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="filename != null  and filename != ''">filename = #{filename},</if>
+            <if test="identifier != null  and identifier != ''">identifier = #{identifier},</if>
+            <if test="url != null  and url != ''">url = #{url},</if>
+            <if test="location != null  and location != ''">location = #{location},</if>
+            <if test="totalSize != null ">total_size = #{totalSize},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBackFilelistById" parameterType="Long">
+        delete from sys_filelist where id = #{id}
+    </delete>
+
+    <delete id="deleteBackFilelistByIds" parameterType="String">
+        delete from sys_filelist where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

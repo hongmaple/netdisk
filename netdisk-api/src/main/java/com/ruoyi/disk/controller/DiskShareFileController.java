@@ -60,7 +60,7 @@ public class DiskShareFileController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskShareFile diskShareFile)
     {
-        startPage();
+        startPage("id desc");
         diskShareFile.setCreateId(getUserId());
         List<DiskShareFile> list = diskShareFileService.selectDiskShareFileList(diskShareFile);
         return getDataTable(list);
