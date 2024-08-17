@@ -11,6 +11,8 @@ const name = process.env.VUE_APP_TITLE || '管理系统' // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
 
+const webpack = require("webpack");
+
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
 // 这里只列一部分，具体配置参考文档
@@ -66,6 +68,11 @@ module.exports = {
         filename: '[path].gz[query]',   // 压缩后的文件名
         algorithm: 'gzip',              // 使用gzip压缩
         minRatio: 0.8                   // 压缩率小于1才会压缩
+      }),
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+        "windows.jQuery": "jquery"
       })
     ],
   },

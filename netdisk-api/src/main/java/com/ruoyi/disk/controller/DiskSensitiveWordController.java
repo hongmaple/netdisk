@@ -41,7 +41,7 @@ public class DiskSensitiveWordController extends BaseController
     @GetMapping("/list")
     public TableDataInfo list(DiskSensitiveWord diskSensitiveWord)
     {
-        startPage();
+        startPage("id desc");
         List<DiskSensitiveWord> list = diskSensitiveWordService.selectDiskSensitiveWordList(diskSensitiveWord);
         return getDataTable(list);
     }

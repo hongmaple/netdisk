@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.disk.mapper.BackChunkMapper">
+
+    <resultMap type="com.ruoyi.disk.domain.BackChunk" id="BackChunkResult">
+        <result property="id"    column="id"    />
+        <result property="chunkNumber"    column="chunk_number"    />
+        <result property="chunkSize"    column="chunk_size"    />
+        <result property="currentChunkSize"    column="current_chunk_size"    />
+        <result property="filename"    column="filename"    />
+        <result property="identifier"    column="identifier"    />
+        <result property="relativePath"    column="relative_path"    />
+        <result property="totalChunks"    column="total_chunks"    />
+        <result property="totalSize"    column="total_size"    />
+    </resultMap>
+
+    <sql id="selectBackChunkVo">
+        select id, chunk_number, chunk_size, current_chunk_size, filename, identifier, relative_path, total_chunks, total_size from sys_chunk
+    </sql>
+
+    <select id="selectBackChunkList" parameterType="com.ruoyi.disk.domain.BackChunk" resultMap="BackChunkResult">
+        <include refid="selectBackChunkVo"/>
+        <where>
+            <if test="chunkNumber != null "> and chunk_number = #{chunkNumber}</if>
+            <if test="chunkSize != null "> and chunk_size = #{chunkSize}</if>
+            <if test="currentChunkSize != null "> and current_chunk_size = #{currentChunkSize}</if>
+            <if test="filename != null  and filename != ''"> and filename = #{filename}</if>
+            <if test="identifier != null  and identifier != ''"> and identifier = #{identifier}</if>
+            <if test="relativePath != null  and relativePath != ''"> and relative_path = #{relativePath}</if>
+            <if test="totalChunks != null "> and total_chunks = #{totalChunks}</if>
+            <if test="totalSize != null "> and total_size = #{totalSize}</if>
+        </where>
+        order by chunk_number desc
+    </select>
+
+    <select id="selectBackChunkById" parameterType="Long" resultMap="BackChunkResult">
+        <include refid="selectBackChunkVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBackChunk" parameterType="com.ruoyi.disk.domain.BackChunk" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_chunk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="chunkNumber != null ">chunk_number,</if>
+            <if test="chunkSize != null ">chunk_size,</if>
+            <if test="currentChunkSize != null ">current_chunk_size,</if>
+            <if test="filename != null  and filename != ''">filename,</if>
+            <if test="identifier != null  and identifier != ''">identifier,</if>
+            <if test="relativePath != null  and relativePath != ''">relative_path,</if>
+            <if test="totalChunks != null ">total_chunks,</if>
+            <if test="totalSize != null ">total_size,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="chunkNumber != null ">#{chunkNumber},</if>
+            <if test="chunkSize != null ">#{chunkSize},</if>
+            <if test="currentChunkSize != null ">#{currentChunkSize},</if>
+            <if test="filename != null  and filename != ''">#{filename},</if>
+            <if test="identifier != null  and identifier != ''">#{identifier},</if>
+            <if test="relativePath != null  and relativePath != ''">#{relativePath},</if>
+            <if test="totalChunks != null ">#{totalChunks},</if>
+            <if test="totalSize != null ">#{totalSize},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBackChunk" parameterType="com.ruoyi.disk.domain.BackChunk">
+        update sys_chunk
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="chunkNumber != null ">chunk_number = #{chunkNumber},</if>
+            <if test="chunkSize != null ">chunk_size = #{chunkSize},</if>
+            <if test="currentChunkSize != null ">current_chunk_size = #{currentChunkSize},</if>
+            <if test="filename != null  and filename != ''">filename = #{filename},</if>
+            <if test="identifier != null  and identifier != ''">identifier = #{identifier},</if>
+            <if test="relativePath != null  and relativePath != ''">relative_path = #{relativePath},</if>
+            <if test="totalChunks != null ">total_chunks = #{totalChunks},</if>
+            <if test="totalSize != null ">total_size = #{totalSize},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBackChunkById" parameterType="Long">
+        delete from sys_chunk where id = #{id}
+    </delete>
+
+    <delete id="deleteBackChunkByIdentifier" parameterType="com.ruoyi.disk.domain.BackChunk">
+        delete from sys_chunk where identifier = #{identifier} and filename = #{filename}
+    </delete>
+
+    <delete id="deleteBackChunkByIds" parameterType="String">
+        delete from sys_chunk where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

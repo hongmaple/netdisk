@@ -56,6 +56,23 @@ public class BaseController
     }
 
     /**
+     * 设置请求分页数据
+     */
+    protected void startPage(Integer pageNum, Integer pageSize, String orderBy)
+    {
+        PageUtils.startPage(pageNum,pageSize,orderBy);
+    }
+
+    /**
+     * 设置请求分页数据
+     */
+    protected void startPage(String orderBy)
+    {
+        PageUtils.startPage(orderBy);
+    }
+
+
+    /**
      * 设置请求排序数据
      */
     protected void startOrderBy()
