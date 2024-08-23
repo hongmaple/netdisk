@@ -463,7 +463,7 @@ export default {
         Authorization: "Bearer " + getToken()
       },
       // 数量限制
-      limit: 2,
+      limit: 10,
       // 大小限制(MB)
       fileSize: 100,
       fileType: ["bmp", "gif", "jpg", "jpeg", "png","swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg",

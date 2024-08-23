@@ -239,7 +239,7 @@ export default {
         Authorization: "Bearer " + getToken()
       },
       // 数量限制
-      limit: 1,
+      limit: 10,
       // 大小限制(MB)
       fileSize: 100,
       fileType: ["mp4", "avi", "rmvb"],
