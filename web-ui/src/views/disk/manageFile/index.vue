@@ -83,7 +83,7 @@
           plain
           icon="el-icon-download"
           size="mini"
-          @click="handleelDownload"
+          @click="handleDownload"
         >下载</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -806,7 +806,7 @@ export default {
     copyFailed() {
       this.$modal.msgError("复制失败");
     },
-    handleelDownload(row) {
+    handleDownload(row) {
       const ids = row.id || this.ids;
       const data = {
         ids: ids.join(",")

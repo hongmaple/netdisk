@@ -67,7 +67,7 @@
           plain
           icon="el-icon-download"
           size="mini"
-          @click="handleelDownload"
+          @click="handleDownload"
         >下载</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -236,7 +236,7 @@ export default {
         Authorization: "Bearer " + getToken()
       },
       // 数量限制
-      limit: 1,
+      limit: 10,
       // 大小限制(MB)
       fileSize: 100,
       // 是否显示提示
@@ -432,7 +432,7 @@ export default {
         this.getList();
       }
     },
-    handleelDownload() {
+    handleDownload() {
       const data = {
         ids: this.ids.join(",")
       }
