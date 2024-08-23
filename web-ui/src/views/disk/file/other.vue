@@ -67,7 +67,7 @@
           plain
           icon="el-icon-download"
           size="mini"
-          @click="handleelDownload"
+          @click="handleDownload"
         >下载</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -432,7 +432,7 @@ export default {
         this.getList();
       }
     },
-    handleelDownload() {
+    handleDownload() {
       const data = {
         ids: this.ids.join(",")
       }

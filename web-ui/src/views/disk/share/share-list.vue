@@ -47,7 +47,7 @@
             plain
             icon="el-icon-download"
             size="mini"
-            @click="handleelDownload"
+            @click="handleDownload"
           >下载
           </el-button>
         </el-col>
@@ -303,7 +303,7 @@ export default {
         this.getList();
       }
     },
-    handleelDownload() {
+    handleDownload() {
       const data = {
         uuid: this.queryParams.uuid,
         secretKey: this.queryParams.secretKey,
