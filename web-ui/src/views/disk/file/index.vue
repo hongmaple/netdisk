@@ -93,6 +93,7 @@
           plain
           icon="el-icon-download"
           size="mini"
+          :disabled="single"
           @click="handleelDownload"
         >下载</el-button>
       </el-col>
