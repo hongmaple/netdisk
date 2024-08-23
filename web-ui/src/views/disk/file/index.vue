@@ -291,7 +291,7 @@
               请上传
               <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
               <template v-if="fileSize"> 数量不超过 <b style="color: #f56c6c">{{ limit }}</b> </template>
-              <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
+<!--              <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>-->
               的文件
             </div>
           </el-upload>
@@ -462,7 +462,7 @@ export default {
         Authorization: "Bearer " + getToken()
       },
       // 数量限制
-      limit: 1,
+      limit: 2,
       // 大小限制(MB)
       fileSize: 100,
       fileType: ["bmp", "gif", "jpg", "jpeg", "png","swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg",
@@ -558,7 +558,7 @@ export default {
   computed: {
     // 是否显示提示
     showTip() {
-      return this.isShowTip && (this.fileType || this.fileSize);
+      return this.isShowTip && (this.fileType || this.fileSize || this.limit);
     },
   },
   methods: {
@@ -719,15 +719,15 @@ export default {
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
       // 校检文件类型
-      if (this.fileType) {
-        const fileName = file.name.split('.');
-        const fileExt = fileName[fileName.length - 1];
-        const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
-        if (!isTypeOk) {
-          this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
-          return false;
-        }
-      }
+      // if (this.fileType) {
+      //   const fileName = file.name.split('.');
+      //   const fileExt = fileName[fileName.length - 1];
+      //   const isTypeOk = this.fileType.indexOf(fileExt) >= 0;
+      //   if (!isTypeOk) {
+      //     this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
+      //     return false;
+      //   }
+      // }
       // 校检文件大小
       if (this.fileSize) {
         const isLt = file.size / 1024 / 1024 < this.fileSize;
