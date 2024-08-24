@@ -186,6 +186,7 @@
 <script>
 import { getToken } from "@/utils/auth";
 import { listFile, getFile, delFile, addFile, updateFile } from "@/api/disk/file";
+import {getMusicFileType} from "@/utils/disk";
 
 export default {
   name: "File-music",
@@ -241,7 +242,7 @@ export default {
       limit: 10,
       // 大小限制(MB)
       fileSize: 100,
-      fileType: ["swf", "flv", "mp3", "wav", "wma", "wmv", "mid", "avi", "mpg", "asf", "rm", "rmvb"],
+      fileType: getMusicFileType(),
       // 是否显示提示
       isShowTip: {
         type: Boolean,

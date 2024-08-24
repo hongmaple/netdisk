@@ -186,6 +186,7 @@
 <script>
 import { getToken } from "@/utils/auth";
 import { listFile, getFile, delFile, addFile, updateFile } from "@/api/disk/file";
+import {getDocFileType} from "@/utils/disk";
 
 export default {
   name: "File-doc",
@@ -241,7 +242,7 @@ export default {
       limit: 10,
       // 大小限制(MB)
       fileSize: 100,
-      fileType: ["doc", "docx", "xls", "ppt", "txt", "pdf"],
+      fileType: getDocFileType(),
       // 是否显示提示
       isShowTip: {
         type: Boolean,

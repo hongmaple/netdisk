@@ -187,6 +187,7 @@
 <script>
 import { getToken } from "@/utils/auth";
 import { listFile, getFile, delFile, addFile, updateFile } from "@/api/disk/file";
+import {getVideoFileType} from "@/utils/disk";
 
 export default {
   name: "File-video",
@@ -242,7 +243,7 @@ export default {
       limit: 10,
       // 大小限制(MB)
       fileSize: 100,
-      fileType: ["mp4", "avi", "rmvb"],
+      fileType: getVideoFileType(),
       // 是否显示提示
       isShowTip: {
         type: Boolean,

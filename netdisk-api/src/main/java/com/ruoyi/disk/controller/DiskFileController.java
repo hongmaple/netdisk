@@ -143,12 +143,12 @@ public class DiskFileController extends BaseController
             String url = Constants.RESOURCE_PREFIX;
             String[] localPaths = RuoYiConfig.getUploadPath().split("/");
             if (diskFile.getParentId()==0) {
-                if (Objects.nonNull(diskStorage)) url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()+"/"+diskFile.getName();
+                url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()+"/"+diskFile.getName();
             }else {
                 DiskFile parentIdFile = diskFileService.selectDiskFileById(diskFile.getParentId());
                 if (Objects.isNull(parentIdFile)) throw new ServiceException("父文件夹不存在");
                 String[] parentPaths = parentIdFile.getUrl().split("/");
-                if (Objects.nonNull(diskStorage)) url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()
+                url = url+"/"+localPaths[localPaths.length-1]+"/"+diskStorage.getBaseDir()
                         +"/"+parentPaths[parentPaths.length-1]+"/"+diskFile.getName();
             }
             diskFile.setUrl(url);

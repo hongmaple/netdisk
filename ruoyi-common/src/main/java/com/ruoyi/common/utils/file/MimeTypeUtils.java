@@ -17,7 +17,9 @@ public class MimeTypeUtils
 
     public static final String IMAGE_GIF = "image/gif";
     
-    public static final String[] IMAGE_EXTENSION = { "bmp", "gif", "jpg", "jpeg", "png" };
+    public static final String[] IMAGE_EXTENSION = { "bmp","tif", "gif", "jpg", "jpeg", "png","pcx",
+            "tga","exif","fpx","svg","psd","cdr","pcd","dxf","ufo",
+            "eps","ai","raw","WMF","webp","avif","apng" };
 
     public static final String[] FLASH_EXTENSION = { "swf", "flv" };
 
@@ -28,13 +30,17 @@ public class MimeTypeUtils
 
     public static final String[] DOC_EXTENSION = { "doc", "docx", "xls", "ppt", "txt", "pdf"};
 
+    public static final String[] COMPRESS_EXTENSION = { "rar","rar4", "zip", "gz", "bz2", "7z" };
+
     public static final String[] DEFAULT_ALLOWED_EXTENSION = {
             // 图片
-            "bmp", "gif", "jpg", "jpeg", "png",
+            "bmp","tif", "gif", "jpg", "jpeg", "png","pcx",
+            "tga","exif","fpx","svg","psd","cdr","pcd","dxf","ufo",
+            "eps","ai","raw","WMF","webp","avif","apng",
             // word excel powerpoint
             "doc", "docx", "xls", "xlsx", "ppt", "pptx", "html", "htm", "txt",
             // 压缩文件
-            "rar", "zip", "gz", "bz2",
+            "rar","rar4", "zip", "gz", "bz2", "7z",
             // 视频格式
             "mp4", "avi", "rmvb",
             // pdf
