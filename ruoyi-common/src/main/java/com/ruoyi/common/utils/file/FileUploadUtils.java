@@ -195,6 +195,10 @@ public class FileUploadUtils
             {
                 throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
                         fileName);
+            } else if (allowedExtension == MimeTypeUtils.COMPRESS_EXTENSION)
+            {
+                throw new InvalidExtensionException.InvalidVideoExtensionException(allowedExtension, extension,
+                        fileName);
             }
 //            else
 //            {

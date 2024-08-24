@@ -38,7 +38,7 @@ import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
 // 网盘工具
-import { storageUnitFormat } from "@/utils/disk";
+import {storageUnitFormat, getImageFileType, getDocFileType, getMusicFileType} from "@/utils/disk";
 import VueCoreVideoPlayer from 'vue-core-video-player'
 // 文件分片、断点续传组件
 import uploader from 'vue-simple-uploader'
@@ -55,6 +55,9 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 Vue.prototype.storageUnitFormat = storageUnitFormat
+Vue.prototype.getImageFileType = getImageFileType
+Vue.prototype.getDocFileType = getDocFileType
+Vue.prototype.getMusicFileType = getMusicFileType
 
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
