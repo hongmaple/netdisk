@@ -274,6 +274,19 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <repository>
+            <id>maple</id>
+            <url>https://packages.aliyun.com/6083dde00f167f18d196f48c/maven/maple</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </distributionManagement>
+
     <!--配置环境的profile-->
     <profiles>
         <profile>
