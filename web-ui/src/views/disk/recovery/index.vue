@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="创建者" prop="createId">
-        <el-input
-          v-model="queryParams.createId"
-          placeholder="请输入创建者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
           v-model="daterangeCreateTime"
@@ -19,14 +11,6 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         ></el-date-picker>
-      </el-form-item>
-      <el-form-item label="更新者" prop="updateId">
-        <el-input
-          v-model="queryParams.updateId"
-          placeholder="请输入更新者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -256,6 +240,11 @@ export default {
       this.single = this.checkboxFileIds.length!==1
       this.multiple = !this.checkboxFileIds.length
     },
+    restCheckbox() {
+      this.ids = [];
+      this.single = true
+      this.multiple = true
+    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
@@ -298,7 +287,9 @@ export default {
       this.$modal.confirm('是否确认删除回收站编号为"' + ids + '"的数据项？').then(function() {
         return delRecovery(ids);
       }).then(() => {
+        this.resetQuery()
         this.getList();
+        this.restCheckbox()
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
@@ -313,7 +304,9 @@ export default {
       this.$modal.confirm('是否确认恢复回收站编号为"' + ids + '"的数据项？').then(function() {
         return refresh(ids);
       }).then(() => {
+        this.resetQuery()
         this.getList();
+        this.restCheckbox()
         this.$modal.msgSuccess("恢复成功");
       }).catch(() => {});
     },
