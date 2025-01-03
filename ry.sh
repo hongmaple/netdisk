@@ -28,6 +28,7 @@ function start()
 		nohup java $JVM_OPTS -jar $AppName > /dev/null 2>&1 &
 		echo "Start $AppName success..."
 	fi
+  /opt/notify.sh "网盘服务状态通知" "已上线。" dingtalk
 }
 
 function stop()
@@ -52,6 +53,7 @@ function stop()
 	else
 		echo "$AppName already stopped."
 	fi
+  /opt/notify.sh "网盘服务状态通知" "已下线。" dingtalk
 }
 
 function restart()
@@ -76,7 +78,7 @@ function monitor_service() {
     while true; do
         PID=`ps -ef |grep java|grep $AppName|grep -v grep|wc -l`
         if [ $PID != 0 ];then
-          echo "monitor 正常"
+          echo "$(date) - Service $AppName monitor 正常" >> $LOG_PATH
         else
             start
             # /opt/notify.sh "服务状态通知" "服务已挂掉并自动重启。" email
